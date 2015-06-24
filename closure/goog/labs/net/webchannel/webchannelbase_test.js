@@ -161,6 +161,11 @@ MockChannelRequest.prototype.xmlHttpGet = function(uri, decodeChunks,
   this.requestStartTime_ = goog.now();
 };
 
+MockChannelRequest.prototype.tridentGet = function(uri, usingSecondaryDomain) {
+  this.channelDebug_.debug('<---GET (T): ' + uri);
+  this.requestStartTime_ = goog.now();
+};
+
 MockChannelRequest.prototype.sendUsingImgTag = function(uri) {
   this.requestStartTime_ = goog.now();
 };
@@ -200,11 +205,6 @@ MockChannelRequest.prototype.getRequestStartTime = function() {
 MockChannelRequest.prototype.getXhr = function() {
   return null;
 };
-
-
-function shouldRunTests() {
-  return goog.labs.net.webChannel.ChannelRequest.supportsXhrStreaming();
-}
 
 
 /**
@@ -531,6 +531,16 @@ function responseUnknownSessionId() {
   getSingleForwardRequest().successful_ = false;
   channel.onRequestComplete(
       getSingleForwardRequest());
+  mockClock.tick(0);
+}
+
+
+function responseActiveXBlocked() {
+  channel.backChannelRequest_.lastError_ =
+      goog.labs.net.webChannel.ChannelRequest.Error.ACTIVE_X_BLOCKED;
+  channel.backChannelRequest_.successful_ = false;
+  channel.onRequestComplete(
+      channel.backChannelRequest_);
   mockClock.tick(0);
 }
 
@@ -994,6 +1004,23 @@ function testStatEventReportedOnlyOnce() {
   numStatEvents = 0;
   mockClock.tick(goog.labs.net.webChannel.netUtils.NETWORK_TIMEOUT);
   assertEquals('No new stat events should be reported.', 0, numStatEvents);
+}
+
+
+function testActiveXBlockedEventReportedOnlyOnce() {
+  stubNetUtils();
+
+  connectForwardChannel();
+  numStatEvents = 0;
+  lastStatEvent = null;
+  responseActiveXBlocked();
+
+  assertEquals(1, numStatEvents);
+  assertEquals(goog.labs.net.webChannel.requestStats.Stat.ERROR_OTHER,
+      lastStatEvent);
+
+  mockClock.tick(goog.labs.net.webChannel.netUtils.NETWORK_TIMEOUT);
+  assertEquals('No new stat events should be reported.', 1, numStatEvents);
 }
 
 

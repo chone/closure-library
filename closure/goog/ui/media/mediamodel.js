@@ -29,8 +29,6 @@ goog.provide('goog.ui.media.MediaModel.SubTitle');
 goog.provide('goog.ui.media.MediaModel.Thumbnail');
 
 goog.require('goog.array');
-goog.require('goog.html.TrustedResourceUrl');
-goog.require('goog.html.legacyconversions');
 
 
 
@@ -128,28 +126,28 @@ goog.ui.media.MediaModel = function(opt_url,
   /**
    * A list of thumbnails representations of the media (eg different sizes of
    * the same photo, etc).
-   * @type {Array<goog.ui.media.MediaModel.Thumbnail>}
+   * @type {Array.<goog.ui.media.MediaModel.Thumbnail>}
    * @private
    */
   this.thumbnails_ = [];
 
   /**
    * The list of categories that are applied to this media.
-   * @type {Array<goog.ui.media.MediaModel.Category>}
+   * @type {Array.<goog.ui.media.MediaModel.Category>}
    * @private
    */
   this.categories_ = [];
 
   /**
    * The list of credits that pertain to this media object.
-   * @type {!Array<goog.ui.media.MediaModel.Credit>}
+   * @type {!Array.<goog.ui.media.MediaModel.Credit>}
    * @private
    */
   this.credits_ = [];
 
   /**
    * The list of subtitles for the media object.
-   * @type {Array<goog.ui.media.MediaModel.SubTitle>}
+   * @type {Array.<goog.ui.media.MediaModel.SubTitle>}
    * @private
    */
   this.subTitles_ = [];
@@ -296,7 +294,7 @@ goog.ui.media.MediaModel.prototype.setDescription = function(description) {
 
 /**
  * Gets the thumbnail urls.
- * @return {Array<goog.ui.media.MediaModel.Thumbnail>} The list of thumbnails.
+ * @return {Array.<goog.ui.media.MediaModel.Thumbnail>} The list of thumbnails.
  */
 goog.ui.media.MediaModel.prototype.getThumbnails = function() {
   return this.thumbnails_;
@@ -305,7 +303,7 @@ goog.ui.media.MediaModel.prototype.getThumbnails = function() {
 
 /**
  * Sets the thumbnail list.
- * @param {Array<goog.ui.media.MediaModel.Thumbnail>} thumbnails The list of
+ * @param {Array.<goog.ui.media.MediaModel.Thumbnail>} thumbnails The list of
  *     thumbnail.
  * @return {!goog.ui.media.MediaModel} The object itself, used for chaining.
  */
@@ -397,7 +395,7 @@ goog.ui.media.MediaModel.prototype.setPlayer = function(player) {
 
 /**
  * Gets the categories of the media.
- * @return {Array<goog.ui.media.MediaModel.Category>} The categories of the
+ * @return {Array.<goog.ui.media.MediaModel.Category>} The categories of the
  *     media.
  */
 goog.ui.media.MediaModel.prototype.getCategories = function() {
@@ -407,7 +405,7 @@ goog.ui.media.MediaModel.prototype.getCategories = function() {
 
 /**
  * Sets the categories of the media
- * @param {Array<goog.ui.media.MediaModel.Category>} categories The categories
+ * @param {Array.<goog.ui.media.MediaModel.Category>} categories The categories
  *     of the media.
  * @return {!goog.ui.media.MediaModel} The object itself, used for chaining.
  */
@@ -436,7 +434,7 @@ goog.ui.media.MediaModel.prototype.findCategoryWithScheme = function(scheme) {
 
 /**
  * Gets the credits of the media.
- * @return {!Array<goog.ui.media.MediaModel.Credit>} The credits of the media.
+ * @return {!Array.<goog.ui.media.MediaModel.Credit>} The credits of the media.
  */
 goog.ui.media.MediaModel.prototype.getCredits = function() {
   return this.credits_;
@@ -445,7 +443,7 @@ goog.ui.media.MediaModel.prototype.getCredits = function() {
 
 /**
  * Sets the credits of the media
- * @param {!Array<goog.ui.media.MediaModel.Credit>} credits The credits of the
+ * @param {!Array.<goog.ui.media.MediaModel.Credit>} credits The credits of the
  *     media.
  * @return {!goog.ui.media.MediaModel} The object itself, used for chaining.
  */
@@ -458,20 +456,20 @@ goog.ui.media.MediaModel.prototype.setCredits = function(credits) {
 /**
  * Finds all credits with the given role.
  * @param {string} role The role to search for.
- * @return {!Array<!goog.ui.media.MediaModel.Credit>} An array of credits
+ * @return {!Array.<!goog.ui.media.MediaModel.Credit>} An array of credits
  *     with the given role. May be empty.
  */
 goog.ui.media.MediaModel.prototype.findCreditsWithRole = function(role) {
   var credits = goog.array.filter(this.credits_, function(credit) {
     return role == credit.getRole();
   });
-  return /** @type {!Array<!goog.ui.media.MediaModel.Credit>} */ (credits);
+  return /** @type {!Array.<!goog.ui.media.MediaModel.Credit>} */ (credits);
 };
 
 
 /**
  * Gets the subtitles for the media.
- * @return {Array<goog.ui.media.MediaModel.SubTitle>} The subtitles.
+ * @return {Array.<goog.ui.media.MediaModel.SubTitle>} The subtitles.
  */
 goog.ui.media.MediaModel.prototype.getSubTitles = function() {
   return this.subTitles_;
@@ -480,7 +478,7 @@ goog.ui.media.MediaModel.prototype.getSubTitles = function() {
 
 /**
  * Sets the subtitles for the media
- * @param {Array<goog.ui.media.MediaModel.SubTitle>} subtitles The subtitles.
+ * @param {Array.<goog.ui.media.MediaModel.SubTitle>} subtitles The subtitles.
  * @return {!goog.ui.media.MediaModel} The object itself.
  */
 goog.ui.media.MediaModel.prototype.setSubTitles = function(subtitles) {
@@ -561,7 +559,7 @@ goog.ui.media.MediaModel.Thumbnail.prototype.setSize = function(size) {
 /**
  * Constructs a player containing details of the player's URL and
  * optionally its size.
- * @param {string|!goog.html.TrustedResourceUrl} url The URL of the player.
+ * @param {string} url The URL of the player.
  * @param {Object=} opt_vars Optional map of arguments to the player.
  * @param {goog.math.Size=} opt_size The size of the player if known.
  * @constructor
@@ -570,11 +568,10 @@ goog.ui.media.MediaModel.Thumbnail.prototype.setSize = function(size) {
 goog.ui.media.MediaModel.Player = function(url, opt_vars, opt_size) {
   /**
    * The player's URL.
-   * @type {!goog.html.TrustedResourceUrl}
+   * @type {string}
    * @private
    */
-  this.trustedResourceUrl_ = url instanceof goog.html.TrustedResourceUrl ? url :
-      goog.html.legacyconversions.trustedResourceUrlFromString(url);
+  this.url_ = url;
 
   /**
    * Player arguments, typically flash arguments.
@@ -593,32 +590,22 @@ goog.ui.media.MediaModel.Player = function(url, opt_vars, opt_size) {
 
 
 /**
- * Gets the player URL.
- * @return {!goog.html.TrustedResourceUrl} The player's URL.
- */
-goog.ui.media.MediaModel.Player.prototype.getTrustedResourceUrl = function() {
-  return this.trustedResourceUrl_;
-};
-
-
-/**
- * Gets the player URL.
- * @return {string} The player's URL.
+ * Gets the player url.
+ * @return {string} The thumbnail's image URL.
  */
 goog.ui.media.MediaModel.Player.prototype.getUrl = function() {
-  return this.trustedResourceUrl_.getTypedStringValue();
+  return this.url_;
 };
 
 
 /**
- * Sets the player URL.
- * @param {string|!goog.html.TrustedResourceUrl} url The player's URL.
+ * Sets the player url.
+ * @param {string} url The thumbnail's image URL.
  * @return {!goog.ui.media.MediaModel.Player} The object itself, used for
  *     chaining.
  */
 goog.ui.media.MediaModel.Player.prototype.setUrl = function(url) {
-  this.trustedResourceUrl_ = url instanceof goog.html.TrustedResourceUrl ? url :
-      goog.html.legacyconversions.trustedResourceUrlFromString(url);
+  this.url_ = url;
   return this;
 };
 

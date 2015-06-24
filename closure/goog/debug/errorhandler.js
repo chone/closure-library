@@ -20,11 +20,9 @@
 goog.provide('goog.debug.ErrorHandler');
 goog.provide('goog.debug.ErrorHandler.ProtectedFunctionError');
 
-goog.require('goog.Disposable');
 goog.require('goog.asserts');
 goog.require('goog.debug');
 goog.require('goog.debug.EntryPointMonitor');
-goog.require('goog.debug.Error');
 goog.require('goog.debug.Trace');
 
 
@@ -224,7 +222,7 @@ goog.debug.ErrorHandler.prototype.getProtectedFunction = function(fn) {
 };
 
 
-// TODO(mknichel): Allow these functions to take in the window to protect.
+// TODO(user): Allow these functions to take in the window to protect.
 /**
  * Installs exception protection for window.setTimeout to handle exceptions.
  */

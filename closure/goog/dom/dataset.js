@@ -22,19 +22,6 @@
 goog.provide('goog.dom.dataset');
 
 goog.require('goog.string');
-goog.require('goog.userAgent.product');
-
-
-/**
- * Whether using the dataset property is allowed.  In IE (up to and including
- * IE 11), setting element.dataset in JS does not propagate values to CSS,
- * breaking expressions such as `content: attr(data-content)` that would
- * otherwise work.
- * See {@link https://github.com/google/closure-library/issues/396}.
- * @const
- * @private
- */
-goog.dom.dataset.ALLOWED_ = !goog.userAgent.product.IE;
 
 
 /**
@@ -55,7 +42,7 @@ goog.dom.dataset.PREFIX_ = 'data-';
  * @param {string} value Value for the custom data attribute.
  */
 goog.dom.dataset.set = function(element, key, value) {
-  if (goog.dom.dataset.ALLOWED_ && element.dataset) {
+  if (element.dataset) {
     element.dataset[key] = value;
   } else {
     element.setAttribute(
@@ -73,7 +60,7 @@ goog.dom.dataset.set = function(element, key, value) {
  * @return {?string} The attribute value, if it exists.
  */
 goog.dom.dataset.get = function(element, key) {
-  if (goog.dom.dataset.ALLOWED_ && element.dataset) {
+  if (element.dataset) {
     // Android browser (non-chrome) returns the empty string for
     // element.dataset['doesNotExist'].
     if (!(key in element.dataset)) {
@@ -94,7 +81,7 @@ goog.dom.dataset.get = function(element, key) {
  * @param {string} key Key for the custom data attribute.
  */
 goog.dom.dataset.remove = function(element, key) {
-  if (goog.dom.dataset.ALLOWED_ && element.dataset) {
+  if (element.dataset) {
     delete element.dataset[key];
   } else {
     element.removeAttribute(goog.dom.dataset.PREFIX_ +
@@ -112,7 +99,7 @@ goog.dom.dataset.remove = function(element, key) {
  * @return {boolean} Whether the attribute exists.
  */
 goog.dom.dataset.has = function(element, key) {
-  if (goog.dom.dataset.ALLOWED_ && element.dataset) {
+  if (element.dataset) {
     return key in element.dataset;
   } else if (element.hasAttribute) {
     return element.hasAttribute(goog.dom.dataset.PREFIX_ +
@@ -134,7 +121,7 @@ goog.dom.dataset.has = function(element, key) {
  *     respective values.
  */
 goog.dom.dataset.getAll = function(element) {
-  if (goog.dom.dataset.ALLOWED_ && element.dataset) {
+  if (element.dataset) {
     return element.dataset;
   } else {
     var dataset = {};

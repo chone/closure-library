@@ -81,9 +81,6 @@ function tearDown() {
   testViewport.setAttribute('style', '');
   testViewport.innerHTML = '';
   goog.dispose(mockUserAgent);
-
-  // Prevent multiple vendor prefixed mock elements from poisoning the cache.
-  goog.style.styleNameCache_ = {};
 }
 
 function testSetStyle() {
@@ -801,11 +798,14 @@ function testGetSizeSvgElements() {
   assertRoughlyEquals(expectedHeight, dims.height, 0.01);
 
   dims = goog.style.getSize(svgEl);
-  // The size of the <svg> will be the viewport size on all browsers. This used
-  // to not be true for Firefox, but they fixed the glitch in Firefox 33.
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=530985
-  assertTrue(dims.width >= expectedWidth);
-  assertTrue(dims.height >= expectedHeight);
+  if (goog.userAgent.WEBKIT || goog.userAgent.IE) {
+    // The size of the <svg> will be the viewport size on WebKit browsers.
+    assertTrue(dims.width >= expectedWidth);
+    assertTrue(dims.height >= expectedHeight);
+  } else {
+    assertEquals(expectedWidth, dims.width);
+    assertRoughlyEquals(expectedHeight, dims.height, 0.01);
+  }
 
   el.style.visibility = 'none';
 
@@ -814,8 +814,14 @@ function testGetSizeSvgElements() {
   assertRoughlyEquals(expectedHeight, dims.height, 0.01);
 
   dims = goog.style.getSize(svgEl);
-  assertTrue(dims.width >= expectedWidth);
-  assertTrue(dims.height >= expectedHeight);
+  if (goog.userAgent.WEBKIT || goog.userAgent.IE) {
+    // The size of the <svg> will be the viewport size on WebKit browsers.
+    assertTrue(dims.width >= expectedWidth);
+    assertTrue(dims.height >= expectedHeight);
+  } else {
+    assertEquals(expectedWidth, dims.width);
+    assertRoughlyEquals(expectedHeight, dims.height, 0.01);
+  }
 }
 
 function testGetSizeSvgDocument() {
@@ -1700,16 +1706,6 @@ function testFramedPageOffset() {
       goog.style.getFramedPageOffset(testElement3, iframeWindow));
   assertCoordinateApprox(500, 500, 2,
       goog.style.getFramedPageOffset(testElement3, iframeWindow2));
-
-  // In IE, if the element is in a frame that's been removed from the DOM and
-  // relativeWin is not that frame's contentWindow, the contentWindow's parent
-  // reference points to itself. We want to guarantee that we don't fall into
-  // an infinite loop.
-  var iframeParent = iframe.parentElement;
-  iframeParent.removeChild(iframe);
-  // We don't check the value returned as it differs by browser. 0,0 for Chrome
-  // and FF. IE returns 30000 or 30198 for x in IE8-9 and 300 in IE10-11
-  goog.style.getFramedPageOffset(testElement2, window);
 }
 
 
@@ -1826,7 +1822,7 @@ function testGetVisibleRectForElement() {
   visible = goog.style.getVisibleRectForElement(el);
 
   var iframeViewportSize = goog.dom.getDomHelper(el).getViewportSize();
-  // NOTE(chrishenry): For iframe, the clipping viewport is always the iframe
+  // NOTE(user): For iframe, the clipping viewport is always the iframe
   // viewport, and not the actual browser viewport.
   assertNotNull(visible);
   assertEquals(0, visible.top);
@@ -2035,6 +2031,20 @@ function testGetVisibleRectForElementInsideNestedScrollableArea() {
   assertNull(goog.style.getVisibleRectForElement(el));
 }
 
+function testGeckoMacOrX11RoundPosition() {
+  if ((goog.userAgent.MAC || goog.userAgent.X11) && goog.userAgent.GECKO &&
+      goog.userAgent.isVersionOrHigher('1.9')) {
+
+    var pos = new goog.math.Coordinate(1.5, 1.4);
+    var el = document.createElement('div');
+    goog.style.setPosition(el, pos);
+    assertEquals('The left position should have been rounded',
+                 '2px', el.style.left);
+    assertEquals('The top position should have been rounded',
+                 '1px', el.style.top);
+  }
+}
+
 function testScrollIntoContainerViewQuirks() {
   if (goog.dom.isCss1CompatMode()) return;
 
@@ -2127,23 +2137,6 @@ function testOverflowOffsetParent() {
   assertEquals(parent, goog.style.getOffsetParent(child));
 }
 
-function testShadowDomOffsetParent() {
-  // Ignore browsers that don't support shadowDOM.
-  if (!document.createShadowRoot) {
-    return;
-  }
-
-  var parent = goog.dom.createDom('DIV');
-  parent.style.position = 'relative';
-  var host = goog.dom.createDom('DIV');
-  goog.dom.appendChild(parent, host);
-  var root = host.createShadowRoot();
-  var child = goog.dom.createDom('DIV');
-  goog.dom.appendChild(root, child);
-
-  assertEquals(parent, goog.style.getOffsetParent(child));
-}
-
 function testGetViewportPageOffset() {
   expectedFailures.expectFailureFor(
       goog.userAgent.IE && !goog.userAgent.isVersionOrHigher(9),
@@ -2194,7 +2187,7 @@ function testGetsTranslation() {
 
 /**
  * Test browser detection for a user agent configuration.
- * @param {Array<number>} expectedAgents Array of expected userAgents.
+ * @param {Array.<number>} expectedAgents Array of expected userAgents.
  * @param {string} uaString User agent string.
  * @param {string=} opt_product Navigator product string.
  * @param {string=} opt_vendor Navigator vendor string.

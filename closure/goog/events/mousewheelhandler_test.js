@@ -76,6 +76,7 @@ function testIeStyleMouseWheel() {
     OPERA: false,
     IE: true,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: false
   };
 
@@ -97,6 +98,7 @@ function testNullBody() {
     OPERA: false,
     IE: true,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: false
   };
   var documentObjectWithNoBody = { };
@@ -110,6 +112,7 @@ function testGeckoStyleMouseWheel() {
     OPERA: false,
     IE: false,
     GECKO: true,
+    CAMINO: false,
     WEBKIT: false
   };
 
@@ -144,6 +147,7 @@ function testWebkitStyleMouseWheel_ieStyle() {
     OPERA: false,
     IE: false,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: true,
     WINDOWS: true
   };
@@ -172,6 +176,7 @@ function testWebkitStyleMouseWheel_ieStyleOnLinux() {
     OPERA: false,
     IE: false,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: true,
     WINDOWS: false,
     LINUX: true
@@ -184,6 +189,7 @@ function testWebkitStyleMouseWheel_ieStyleOnMac() {
     OPERA: false,
     IE: false,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: true,
     WINDOWS: false,
     MAC: true
@@ -218,6 +224,7 @@ function testWebkitStyleMouseWheel_nonIeStyle() {
     OPERA: false,
     IE: false,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: true,
     WINDOWS: false
   };
@@ -248,6 +255,7 @@ function testMaxDeltaX() {
     OPERA: false,
     IE: false,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: true,
     WINDOWS: true
   };
@@ -277,6 +285,7 @@ function testMaxDeltaY() {
     OPERA: false,
     IE: false,
     GECKO: false,
+    CAMINO: false,
     WEBKIT: true,
     WINDOWS: true
   };

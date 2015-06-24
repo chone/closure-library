@@ -67,10 +67,8 @@ def _GetDepsLine(path, js_source):
 
   provides = sorted(js_source.provides)
   requires = sorted(js_source.requires)
-  module = 'true' if js_source.is_goog_module else 'false'
 
-  return 'goog.addDependency(\'%s\', %s, %s, %s);\n' % (
-      path, provides, requires, module)
+  return 'goog.addDependency(\'%s\', %s, %s);\n' % (path, provides, requires)
 
 
 def _GetOptionsParser():

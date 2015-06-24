@@ -18,6 +18,8 @@
  *
  * @author arv@google.com (Erik Arvidsson)
  * @author eae@google.com (Emil A Eklund)
+ * @author jonp@google.com (Jon Perlow)
+ * @author annams@google.com (Srinivas Annam)
  *
  * This is a based on the webfx tree control. It since been updated to add
  * typeahead support, as well as accessibility support using ARIA framework.
@@ -361,12 +363,8 @@ goog.ui.tree.TreeControl.prototype.updateLinesAndExpandIcons_ = function() {
   var tree = this;
   var showLines = tree.getShowLines();
   var showRootLines = tree.getShowRootLines();
-
-  /**
-   * Recursively walk through all nodes and update the class names of the
-   * expand icon and the children element.
-   * @param {!goog.ui.tree.BaseNode} node
-   */
+  // Recursively walk through all nodes and update the class names of the
+  // expand icon and the children element.
   function updateShowLines(node) {
     var childrenEl = node.getChildrenElement();
     if (childrenEl) {

@@ -37,7 +37,6 @@
  * @see goog.structs.weak.SUPPORTED_BROWSER
  * @see http://kangax.github.io/compat-table/es5/#Object.defineProperty
  *
- * @package
  */
 
 
@@ -75,7 +74,9 @@ goog.structs.weak.USE_NATIVE_WEAKMAP = 'WeakMap' in goog.global &&
 goog.structs.weak.USE_NATIVE_WEAKSET = 'WeakSet' in goog.global;
 
 
-/** @const */
+/**
+ * @package @const
+ */
 goog.structs.weak.WEAKREFS_PROPERTY_NAME = '__shimWeakrefs__';
 
 
@@ -89,6 +90,7 @@ goog.structs.weak.counter_ = 0;
 /**
  * Generate a unique ID for shim.
  * @return {string}
+ * @package
  */
 goog.structs.weak.generateId = function() {
   return (Math.random() * 1e9 >>> 0) + '' +
@@ -99,6 +101,7 @@ goog.structs.weak.generateId = function() {
 /**
  * Checks that the key is an extensible object, otherwise throws an Error.
  * @param {*} key The key.
+ * @package
  */
 goog.structs.weak.checkKeyType = function(key) {
   if (!goog.isObject(key)) {
@@ -116,6 +119,7 @@ goog.structs.weak.checkKeyType = function(key) {
  * @param {string} id The unique ID of the shim weak collection.
  * @param {*} key The key.
  * @param {*} value value to add.
+ * @package
  */
 goog.structs.weak.set = function(id, key, value) {
   goog.structs.weak.checkKeyType(key);
@@ -134,6 +138,7 @@ goog.structs.weak.set = function(id, key, value) {
  * @param {string} id The unique ID of the shim weak collection.
  * @param {*} key The key to check for.
  * @return {boolean}
+ * @package
  */
 goog.structs.weak.has = function(id, key) {
   goog.structs.weak.checkKeyType(key);
@@ -149,6 +154,7 @@ goog.structs.weak.has = function(id, key) {
  * @param {string} id The unique ID of the shim weak collection.
  * @param {*} key The key to remove.
  * @return {boolean} Whether object was removed.
+ * @package
  */
 goog.structs.weak.remove = function(id, key) {
   if (goog.structs.weak.has(id, key)) {

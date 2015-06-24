@@ -16,6 +16,7 @@
  * @fileoverview Utilities for working with IE control ranges.
  *
  * @author robbyw@google.com (Robby Walker)
+ * @author jparent@google.com (Julie Parent)
  */
 
 
@@ -86,7 +87,7 @@ goog.dom.ControlRange.prototype.range_ = null;
 
 /**
  * Cached list of elements.
- * @type {Array<Element>?}
+ * @type {Array.<Element>?}
  * @private
  */
 goog.dom.ControlRange.prototype.elements_ = null;
@@ -94,7 +95,7 @@ goog.dom.ControlRange.prototype.elements_ = null;
 
 /**
  * Cached sorted list of elements.
- * @type {Array<Element>?}
+ * @type {Array.<Element>?}
  * @private
  */
 goog.dom.ControlRange.prototype.sortedElements_ = null;
@@ -190,7 +191,7 @@ goog.dom.ControlRange.prototype.getEndOffset = function() {
 
 // TODO(robbyw): Figure out how to unify getElements with TextRange API.
 /**
- * @return {!Array<Element>} Array of elements in the control range.
+ * @return {!Array.<Element>} Array of elements in the control range.
  */
 goog.dom.ControlRange.prototype.getElements = function() {
   if (!this.elements_) {
@@ -207,7 +208,7 @@ goog.dom.ControlRange.prototype.getElements = function() {
 
 
 /**
- * @return {!Array<Element>} Array of elements comprising the control range,
+ * @return {!Array.<Element>} Array of elements comprising the control range,
  *     sorted by document order.
  */
 goog.dom.ControlRange.prototype.getSortedElements = function() {
@@ -355,7 +356,7 @@ goog.dom.ControlRange.prototype.collapse = function(toAnchor) {
 goog.dom.DomSavedControlRange_ = function(range) {
   /**
    * The element list.
-   * @type {Array<Element>}
+   * @type {Array.<Element>}
    * @private
    */
   this.elements_ = range.getElements();
@@ -426,7 +427,7 @@ goog.dom.ControlRangeIterator.prototype.endNode_ = null;
 
 /**
  * The list of elements left to traverse.
- * @type {Array<Element>?}
+ * @type {Array.<Element>?}
  * @private
  */
 goog.dom.ControlRangeIterator.prototype.elements_ = null;

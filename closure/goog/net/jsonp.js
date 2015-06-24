@@ -177,9 +177,25 @@ goog.net.Jsonp.prototype.send = function(opt_payload,
       '_' + (goog.net.Jsonp.scriptCounter_++).toString(36) +
       goog.now().toString(36);
 
+  /// plu cdn callback checker
+
+  if (goog.DEBUG) {
+    if (/star\.apicdn/.exec(this.uri_.getDomain())) {
+      var cbValid = '_' + goog.string.hashCode(this.uri_.toString()).toString(36);
+      if (cbValid !== id) {
+	throw Error('CDN API 没有使用正确的callback值 '
+	  + this.uri_.toString() + '  ' + id);
+      }
+    }
+  }
+
+  ///
+
+
   if (!goog.global[goog.net.Jsonp.CALLBACKS]) {
     goog.global[goog.net.Jsonp.CALLBACKS] = {};
   }
+
 
   // Create a new Uri object onto which this payload will be added
   var uri = this.uri_.clone();
@@ -266,11 +282,10 @@ goog.net.Jsonp.newReplyHandler_ = function(id, replyCallback) {
    *
    * @param {...Object} var_args The response data sent from the server.
    */
-  var handler = function(var_args) {
+  return function(var_args) {
     goog.net.Jsonp.cleanup_(id, true);
     replyCallback.apply(undefined, arguments);
   };
-  return handler;
 };
 
 

@@ -23,7 +23,9 @@
  * https://bugzilla.mozilla.org/show_bug.cgi?id=669026.
  *
  * @author gboyer@google.com (Garrett Boyer)
+ * @author jparent@google.com (Julie Parent)
  * @author nicksantos@google.com (Nick Santos)
+ * @author ojan@google.com (Ojan Vafai)
  */
 
 

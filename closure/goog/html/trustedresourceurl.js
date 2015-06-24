@@ -213,7 +213,6 @@ goog.html.TrustedResourceUrl.TYPE_MARKER_GOOG_HTML_SECURITY_PRIVATE_ = {};
  *     with.
  * @return {!goog.html.TrustedResourceUrl} The initialized TrustedResourceUrl
  *     object.
- * @package
  */
 goog.html.TrustedResourceUrl.
     createTrustedResourceUrlSecurityPrivateDoNotAccessOrElse = function(url) {

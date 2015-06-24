@@ -37,7 +37,7 @@ goog.require('goog.locale');
 
 /**
  * The script code to list of language codes map.
- * @type {!Object<string, !Array<string>>}
+ * @type {Object}
  */
 
 /* ~!@# genmethods.scriptToLanguages() #@!~ */

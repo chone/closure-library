@@ -22,6 +22,7 @@
 /** @suppress {extraProvide} */
 goog.provide('goog.labs.net.imageTest');
 
+goog.require('goog.events');
 goog.require('goog.labs.net.image');
 goog.require('goog.string');
 goog.require('goog.testing.AsyncTestCase');
@@ -40,6 +41,8 @@ function testValidImage() {
   goog.labs.net.image.load(url).then(function(value) {
     assertEquals('IMG', value.tagName);
     assertTrue(goog.string.endsWith(value.src, url));
+    assertEquals('Listeners should have been cleaned up.',
+                 0, goog.events.getTotalListenerCount());
     asyncTestCase.continueTesting();
   });
 }
@@ -53,6 +56,8 @@ function testInvalidImage() {
   goog.labs.net.image.load(url).then(
       fail /* opt_onResolved */,
       function() {
+        assertEquals('Listeners should have been cleaned up.',
+            0, goog.events.getTotalListenerCount());
         asyncTestCase.continueTesting();
       });
 }
@@ -70,6 +75,8 @@ function testImageFactory() {
   goog.labs.net.image.load(url, countedFactory).then(function(value) {
     assertEquals(returnedImage, value);
     assertEquals(1, countedFactory.getCallCount());
+    assertEquals('Listeners should have been cleaned up.',
+                 0, goog.events.getTotalListenerCount());
     asyncTestCase.continueTesting();
   });
 }
@@ -82,6 +89,8 @@ function testExistingImage() {
   asyncTestCase.waitForAsync('image load');
   goog.labs.net.image.load(url, image).then(function(value) {
     assertEquals(image, value);
+    assertEquals('Listeners should have been cleaned up.',
+                 0, goog.events.getTotalListenerCount());
     asyncTestCase.continueTesting();
   });
 }

@@ -21,6 +21,7 @@
 goog.provide('goog.json.NativeJsonProcessor');
 
 goog.require('goog.asserts');
+goog.require('goog.json');
 goog.require('goog.json.Processor');
 
 

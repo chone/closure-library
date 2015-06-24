@@ -20,7 +20,6 @@
 
 goog.provide('goog.html.SafeStyleSheet');
 
-goog.require('goog.array');
 goog.require('goog.asserts');
 goog.require('goog.string');
 goog.require('goog.string.Const');
@@ -43,25 +42,16 @@ goog.require('goog.string.TypedString');
  * content of a style element within HTML. The SafeStyleSheet string should
  * not be escaped before interpolation.
  *
- * Values of this type must be composable, i.e. for any two values
- * {@code styleSheet1} and {@code styleSheet2} of this type,
- * {@code goog.html.SafeStyleSheet.unwrap(styleSheet1) +
- * goog.html.SafeStyleSheet.unwrap(styleSheet2)} must itself be a value that
- * satisfies the SafeStyleSheet type constraint. This requirement implies that
- * for any value {@code styleSheet} of this type,
- * {@code goog.html.SafeStyleSheet.unwrap(styleSheet1)} must end in
- * "beginning of rule" context.
-
  * A SafeStyleSheet can be constructed via security-reviewed unchecked
  * conversions. In this case producers of SafeStyleSheet must ensure themselves
  * that the SafeStyleSheet does not contain unsafe script. Note in particular
  * that {@code &lt;} is dangerous, even when inside CSS strings, and so should
- * always be forbidden or CSS-escaped in user controlled input. For example, if
+ * always be forbidden or CSS-escaped in user controlled input. Within an HTML
+ * style (raw text) element, HTML character references, such as
+ * {@code &amp;lt;}, are not allowed. For example, if
  * {@code &lt;/style&gt;&lt;script&gt;evil&lt;/script&gt;"} were interpolated
  * inside a CSS string, it would break out of the context of the original
- * style element and {@code evil} would execute. Also note that within an HTML
- * style (raw text) element, HTML character references, such as
- * {@code &amp;lt;}, are not allowed. See
+ * style element and {@code evil} would execute. See
  * http://www.w3.org/TR/html5/scripting-1.html#restrictions-for-contents-of-script-elements
  * (similar considerations apply to the style element).
  *
@@ -105,33 +95,6 @@ goog.html.SafeStyleSheet.prototype.implementsGoogStringTypedString = true;
  * @private
  */
 goog.html.SafeStyleSheet.TYPE_MARKER_GOOG_HTML_SECURITY_PRIVATE_ = {};
-
-
-/**
- * Creates a new SafeStyleSheet object by concatenating values.
- * @param {...(!goog.html.SafeStyleSheet|!Array<!goog.html.SafeStyleSheet>)}
- *     var_args Values to concatenate.
- * @return {!goog.html.SafeStyleSheet}
- */
-goog.html.SafeStyleSheet.concat = function(var_args) {
-  var result = '';
-
-  /**
-   * @param {!goog.html.SafeStyleSheet|!Array<!goog.html.SafeStyleSheet>}
-   *     argument
-   */
-  var addArgument = function(argument) {
-    if (goog.isArray(argument)) {
-      goog.array.forEach(argument, addArgument);
-    } else {
-      result += goog.html.SafeStyleSheet.unwrap(argument);
-    }
-  };
-
-  goog.array.forEach(arguments, addArgument);
-  return goog.html.SafeStyleSheet
-      .createSafeStyleSheetSecurityPrivateDoNotAccessOrElse(result);
-};
 
 
 /**
@@ -243,27 +206,13 @@ goog.html.SafeStyleSheet.unwrap = function(safeStyleSheet) {
  * @param {string} styleSheet The string to initialize the SafeStyleSheet
  *     object with.
  * @return {!goog.html.SafeStyleSheet} The initialized SafeStyleSheet object.
- * @package
  */
 goog.html.SafeStyleSheet.createSafeStyleSheetSecurityPrivateDoNotAccessOrElse =
     function(styleSheet) {
-  return new goog.html.SafeStyleSheet().initSecurityPrivateDoNotAccessOrElse_(
-      styleSheet);
-};
-
-
-/**
- * Called from createSafeStyleSheetSecurityPrivateDoNotAccessOrElse(). This
- * method exists only so that the compiler can dead code eliminate static
- * fields (like EMPTY) when they're not accessed.
- * @param {string} styleSheet
- * @return {!goog.html.SafeStyleSheet}
- * @private
- */
-goog.html.SafeStyleSheet.prototype.initSecurityPrivateDoNotAccessOrElse_ =
-    function(styleSheet) {
-  this.privateDoNotAccessOrElseSafeStyleSheetWrappedValue_ = styleSheet;
-  return this;
+  var safeStyleSheet = new goog.html.SafeStyleSheet();
+  safeStyleSheet.privateDoNotAccessOrElseSafeStyleSheetWrappedValue_ =
+      styleSheet;
+  return safeStyleSheet;
 };
 
 

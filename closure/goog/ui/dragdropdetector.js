@@ -16,6 +16,7 @@
  * @fileoverview Detects images dragged and dropped on to the window.
  *
  * @author robbyw@google.com (Robby Walker)
+ * @author wcrosby@google.com (Wayne Crosby)
  */
 
 goog.provide('goog.ui.DragDropDetector');
@@ -61,7 +62,7 @@ goog.ui.DragDropDetector = function(opt_filePath) {
           goog.ui.DragDropDetector.BASE_CSS_NAME_, 'w3c-editable-iframe');
   iframe.src = opt_filePath || goog.ui.DragDropDetector.DEFAULT_FILE_PATH_;
 
-  this.element_ = /** @type {!HTMLIFrameElement} */ (iframe);
+  this.element_ = /** @type {HTMLIFrameElement} */ (iframe);
 
   this.handler_ = new goog.events.EventHandler(this);
   this.handler_.listen(iframe, goog.events.EventType.LOAD, this.initIframe_);
@@ -125,8 +126,7 @@ goog.ui.DragDropDetector.BASE_CSS_NAME_ = goog.getCssName('goog-dragdrop');
  * @desc Message shown to users to inform them that they can't drag and drop
  *     local files.
  */
-goog.ui.DragDropDetector.MSG_DRAG_DROP_LOCAL_FILE_ERROR = goog.getMsg(
-    'It is not possible to drag ' +
+var MSG_DRAG_DROP_LOCAL_FILE_ERROR = goog.getMsg('It is not possible to drag ' +
     'and drop image files at this time.\nPlease drag an image from your web ' +
     'browser.');
 
@@ -135,8 +135,7 @@ goog.ui.DragDropDetector.MSG_DRAG_DROP_LOCAL_FILE_ERROR = goog.getMsg(
  * @desc Message shown to users trying to drag and drop protected images from
  *     Flickr, etc.
  */
-goog.ui.DragDropDetector.MSG_DRAG_DROP_PROTECTED_FILE_ERROR = goog.getMsg(
-    'The image you are ' +
+var MSG_DRAG_DROP_PROTECTED_FILE_ERROR = goog.getMsg('The image you are ' +
     'trying to drag has been blocked by the hosting site.');
 
 
@@ -145,17 +144,17 @@ goog.ui.DragDropDetector.MSG_DRAG_DROP_PROTECTED_FILE_ERROR = goog.getMsg(
  * entry is of the form:
  *     regex: url regex
  *     message: user visible message about this special case
- * @type {Array<{regex: RegExp, message: string}>}
+ * @type {Array.<{regex: RegExp, message: string}>}
  * @private
  */
 goog.ui.DragDropDetector.SPECIAL_CASE_URLS_ = [
   {
     regex: /^file:\/\/\//,
-    message: goog.ui.DragDropDetector.MSG_DRAG_DROP_LOCAL_FILE_ERROR
+    message: MSG_DRAG_DROP_LOCAL_FILE_ERROR
   },
   {
     regex: /flickr(.*)spaceball.gif$/,
-    message: goog.ui.DragDropDetector.MSG_DRAG_DROP_PROTECTED_FILE_ERROR
+    message: MSG_DRAG_DROP_PROTECTED_FILE_ERROR
   }
 ];
 
@@ -488,7 +487,7 @@ goog.ui.DragDropDetector.prototype.clearContents_ = function() {
     // clear, calling this right away crashes some versions of WebKit.  Wait
     // until the events are finished.
     goog.global.setTimeout(goog.bind(function() {
-      goog.dom.setTextContent(this, '');
+      this.innerHTML = '';
     }, this.body_), 0);
   } else {
     this.document_.execCommand('selectAll', false, null);

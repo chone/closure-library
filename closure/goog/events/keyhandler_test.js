@@ -40,6 +40,7 @@ function testIe8StyleKeyHandling() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = true;
   goog.userAgent.GECKO = false;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = false;
   goog.userAgent.WINDOWS = true;
@@ -59,6 +60,7 @@ function testIe8StyleKeyHandlingInIe9DocumentMode() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = true;
   goog.userAgent.GECKO = false;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = false;
   goog.userAgent.WINDOWS = true;
@@ -182,6 +184,7 @@ function testIe9StyleKeyHandling() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = true;
   goog.userAgent.GECKO = false;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = false;
   goog.userAgent.WINDOWS = true;
@@ -212,6 +215,7 @@ function testGeckoStyleKeyHandling() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = false;
   goog.userAgent.GECKO = true;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = false;
   goog.userAgent.WINDOWS = true;
@@ -305,6 +309,7 @@ function testSafari3StyleKeyHandling() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = false;
   goog.userAgent.GECKO = false;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = true;
   goog.userAgent.MAC = true;
   goog.userAgent.WINDOWS = false;
@@ -436,6 +441,7 @@ function testOperaStyleKeyHandling() {
   goog.userAgent.OPERA = true;
   goog.userAgent.IE = false;
   goog.userAgent.GECKO = false;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = false;
   goog.userAgent.WINDOWS = true;
@@ -525,6 +531,7 @@ function testGeckoOnMacAltHandling() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = false;
   goog.userAgent.GECKO = true;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = true;
   goog.userAgent.WINDOWS = false;
@@ -566,6 +573,7 @@ function testGeckoEqualSign() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = false;
   goog.userAgent.GECKO = true;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = false;
   goog.userAgent.WINDOWS = true;
@@ -590,6 +598,7 @@ function testMacGeckoSlash() {
   goog.userAgent.OPERA = false;
   goog.userAgent.IE = false;
   goog.userAgent.GECKO = true;
+  goog.userAgent.CAMINO = false;
   goog.userAgent.WEBKIT = false;
   goog.userAgent.MAC = true;
   goog.userAgent.WINDOWS = false;

@@ -21,7 +21,9 @@
 
 goog.provide('goog.graphics.ext.Shape');
 
+goog.require('goog.graphics.ext.Path');
 goog.require('goog.graphics.ext.StrokeAndFillElement');
+goog.require('goog.math.Rect');
 
 
 

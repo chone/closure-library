@@ -145,7 +145,7 @@ goog.ui.media.Vimeo.prototype.createDom = function(c) {
       /** @type {goog.ui.media.VimeoModel} */ (control.getDataModel());
 
   var flash = new goog.ui.media.FlashObject(
-      dataModel.getPlayer().getTrustedResourceUrl(),
+      dataModel.getPlayer().getUrl() || '',
       control.getDomHelper());
   flash.render(div);
 

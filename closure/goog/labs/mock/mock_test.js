@@ -139,33 +139,6 @@ function testMockFunctions() {
   assertEquals(25, mockedFunc(50));
 }
 
-function testStubbingConsecutiveCalls() {
-  var obj = {
-    method: function(i) {
-      return i * 42;
-    }
-  };
-
-  var mockObj = goog.labs.mock.mock(obj);
-  goog.labs.mock.when(mockObj).method(1).thenReturn(3);
-  goog.labs.mock.when(mockObj).method(1).thenReturn(4);
-
-  assertEquals(42, obj.method(1));
-  assertEquals(3, mockObj.method(1));
-  assertEquals(4, mockObj.method(1));
-  assertEquals(4, mockObj.method(1));
-
-  var x = function(i) { return i; };
-  var mockedFunc = goog.labs.mock.mockFunction(x);
-  goog.labs.mock.when(mockedFunc)(100).thenReturn(10);
-  goog.labs.mock.when(mockedFunc)(100).thenReturn(25);
-
-  assertEquals(100, x(100));
-  assertEquals(10, mockedFunc(100));
-  assertEquals(25, mockedFunc(100));
-  assertEquals(25, mockedFunc(100));
-}
-
 function testSpying() {
   var obj = {
     method1: function(i) {
@@ -399,7 +372,7 @@ function testMatcherVerify() {
   assertTrue(e instanceof goog.labs.mock.VerificationError);
 }
 
-function testMatcherVerifyCollision() {
+function testMatcherVerifyColission() {
   var obj = {
     method: function(i) {
       return 2 * i;
@@ -411,7 +384,7 @@ function testMatcherVerifyCollision() {
   assertNotEquals(100, mockObj.method(greaterThan(2)));
 }
 
-function testMatcherVerifyCollisionBetweenMatchers() {
+function testMatcherVerifyColissionBetweenMatchers() {
   var obj = {
     method: function(i) {
       return 2 * i;

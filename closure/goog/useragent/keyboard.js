@@ -18,7 +18,8 @@
 
 goog.provide('goog.userAgent.keyboard');
 
-goog.require('goog.labs.userAgent.platform');
+goog.require('goog.userAgent');
+goog.require('goog.userAgent.product');
 
 
 /**
@@ -34,8 +35,8 @@ goog.define('goog.userAgent.keyboard.ASSUME_MAC_KEYBOARD', false);
  * @private
  */
 goog.userAgent.keyboard.determineMacKeyboard_ = function() {
-  return goog.labs.userAgent.platform.isMacintosh() ||
-      goog.labs.userAgent.platform.isIos();
+  return goog.userAgent.MAC || goog.userAgent.product.IPAD ||
+      goog.userAgent.product.IPHONE;
 };
 
 

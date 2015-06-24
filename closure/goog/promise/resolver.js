@@ -29,20 +29,20 @@ goog.promise.Resolver = function() {};
 
 /**
  * The promise that created this resolver.
- * @type {!goog.Promise<TYPE>}
+ * @const {!goog.Promise.<TYPE>}
  */
 goog.promise.Resolver.prototype.promise;
 
 
 /**
  * Resolves this resolver with the specified value.
- * @type {function((TYPE|goog.Promise<TYPE>|Thenable)=)}
+ * @const {function((TYPE|goog.Promise.<TYPE>|Thenable)=)}
  */
 goog.promise.Resolver.prototype.resolve;
 
 
 /**
  * Rejects this resolver with the specified reason.
- * @type {function(*): void}
+ * @const {function(*): void}
  */
 goog.promise.Resolver.prototype.reject;

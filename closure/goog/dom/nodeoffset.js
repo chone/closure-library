@@ -17,7 +17,6 @@
  * that works on any similar DOM structure regardless of whether it is the same
  * actual nodes.
  *
- * @author robbyw@google.com (Robby Walker)
  */
 
 goog.provide('goog.dom.NodeOffset');
@@ -41,14 +40,14 @@ goog.dom.NodeOffset = function(node, baseNode) {
 
   /**
    * A stack of childNode offsets.
-   * @type {Array<number>}
+   * @type {Array.<number>}
    * @private
    */
   this.offsetStack_ = [];
 
   /**
    * A stack of childNode names.
-   * @type {Array<string>}
+   * @type {Array.<string>}
    * @private
    */
   this.nameStack_ = [];

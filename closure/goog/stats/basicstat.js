@@ -19,8 +19,10 @@
 
 goog.provide('goog.stats.BasicStat');
 
-goog.require('goog.asserts');
+goog.require('goog.array');
+goog.require('goog.iter');
 goog.require('goog.log');
+goog.require('goog.object');
 goog.require('goog.string.format');
 goog.require('goog.structs.CircularBuffer');
 

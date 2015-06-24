@@ -16,6 +16,7 @@
  * @fileoverview Plain text spell checker implementation.
  *
  * @author eae@google.com (Emil A Eklund)
+ * @author sergeys@google.com (Sergey Solyanik)
  * @see ../demos/plaintextspellchecker.html
  */
 
@@ -53,9 +54,10 @@ goog.ui.PlainTextSpellChecker = function(handler, opt_domHelper) {
 
   /**
    * Correction UI container.
-   * @private {!HTMLDivElement}
+   * @type {HTMLDivElement}
+   * @private
    */
-  this.overlay_ = /** @type {!HTMLDivElement} */
+  this.overlay_ = /** @type {HTMLDivElement} */
       (this.getDomHelper().createDom('div'));
   goog.style.setPreWrap(this.overlay_);
 
@@ -137,11 +139,11 @@ goog.ui.PlainTextSpellChecker.prototype.keyHandler_;
 goog.ui.PlainTextSpellChecker.prototype.textArrayIndex_;
 
 
-/** @private {!Array<string>} */
+/** @private {!Array.<string>} */
 goog.ui.PlainTextSpellChecker.prototype.textArray_;
 
 
-/** @private {!Array<boolean>} */
+/** @private {!Array.<boolean>} */
 goog.ui.PlainTextSpellChecker.prototype.textArrayProcess_;
 
 
@@ -467,7 +469,7 @@ goog.ui.PlainTextSpellChecker.prototype.getElementProperties =
 goog.ui.PlainTextSpellChecker.prototype.onWordClick_ = function(event) {
   if (event.target.className == this.invalidWordClassName ||
       event.target.className == this.correctedWordClassName) {
-    this.showSuggestionsMenu(/** @type {!Element} */ (event.target), event);
+    this.showSuggestionsMenu(/** @type {Element} */ (event.target), event);
 
     // Prevent document click handler from closing the menu.
     event.stopPropagation();

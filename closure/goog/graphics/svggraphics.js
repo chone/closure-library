@@ -16,6 +16,7 @@
 /**
  * @fileoverview SvgGraphics sub class that uses SVG to draw the graphics.
  * @author arv@google.com (Erik Arvidsson)
+ * @author yoah@google.com (Yoah Bar-David)
  */
 
 goog.provide('goog.graphics.SvgGraphics');
@@ -90,7 +91,7 @@ goog.graphics.SvgGraphics = function(width, height,
 
   /**
    * Event handler.
-   * @type {goog.events.EventHandler<!goog.graphics.SvgGraphics>}
+   * @type {goog.events.EventHandler.<!goog.graphics.SvgGraphics>}
    * @private
    */
   this.handler_ = new goog.events.EventHandler(this);
@@ -695,6 +696,7 @@ goog.graphics.SvgGraphics.getSvgPath = function(path) {
         break;
       case goog.graphics.Path.Segment.ARCTO:
         var extent = args[3];
+        var toAngle = args[2] + extent;
         list.push('A', args[0], args[1],
             0, Math.abs(extent) > 180 ? 1 : 0, extent > 0 ? 1 : 0,
             args[4], args[5]);
@@ -843,8 +845,6 @@ goog.graphics.SvgGraphics.prototype.disposeInternal = function() {
   delete this.defs_;
   delete this.defsElement_;
   delete this.canvasElement;
-  this.handler_.dispose();
-  delete this.handler_;
   goog.graphics.SvgGraphics.superClass_.disposeInternal.call(this);
 };
 

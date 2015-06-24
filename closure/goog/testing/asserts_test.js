@@ -1137,12 +1137,11 @@ function testStackTrace() {
       if (!stackTraceContainsTestName &&
           goog.labs.userAgent.browser.isChrome()) {
         // Occasionally Chrome does not give us a full stack trace, making for
-        // a flaky test. If we don't have the full stack trace, at least
-        // check that we got the error string.
+        // a flaky test. At least check that we got the error string.
         // Filed a bug on Chromium here:
         // https://code.google.com/p/chromium/issues/detail?id=403029
         var expected = 'Call to assertTrue(boolean) with false';
-        assertContains(expected, stack);
+        assertContains(stack, expected);
         return;
       }
 

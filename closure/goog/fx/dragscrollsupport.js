@@ -15,7 +15,6 @@
 /**
  * @fileoverview Class to support scrollable containers for drag and drop.
  *
- * @author dgajda@google.com (Damian Gajda)
  */
 
 goog.provide('goog.fx.DragScrollSupport');
@@ -70,7 +69,7 @@ goog.fx.DragScrollSupport = function(containerNode, opt_margin,
 
   /**
    * EventHandler used to set up and tear down listeners.
-   * @type {goog.events.EventHandler<!goog.fx.DragScrollSupport>}
+   * @type {goog.events.EventHandler.<!goog.fx.DragScrollSupport>}
    * @private
    */
   this.eventHandler_ = new goog.events.EventHandler(this);

@@ -40,7 +40,6 @@
  * key and character code use {@link goog.events.KeyHandler}.
  * </pre>
  *
- * @author arv@google.com (Erik Arvidsson)
  */
 
 goog.provide('goog.events.BrowserEvent');
@@ -65,7 +64,7 @@ goog.require('goog.userAgent');
  * @extends {goog.events.Event}
  */
 goog.events.BrowserEvent = function(opt_e, opt_currentTarget) {
-  goog.events.BrowserEvent.base(this, 'constructor', opt_e ? opt_e.type : '');
+  goog.base(this, opt_e ? opt_e.type : '');
 
   /**
    * Target that fired the event.
@@ -205,7 +204,7 @@ goog.events.BrowserEvent.MouseButton = {
 
 /**
  * Static data for mapping mouse buttons.
- * @type {!Array<number>}
+ * @type {!Array.<number>}
  */
 goog.events.BrowserEvent.IEButtonMap = [
   1, // LEFT
@@ -383,4 +382,9 @@ goog.events.BrowserEvent.prototype.preventDefault = function() {
  */
 goog.events.BrowserEvent.prototype.getBrowserEvent = function() {
   return this.event_;
+};
+
+
+/** @override */
+goog.events.BrowserEvent.prototype.disposeInternal = function() {
 };

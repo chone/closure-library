@@ -32,7 +32,7 @@ function testSafeUrl() {
       goog.string.Const.from('javascript:trusted();'));
   var extracted = goog.html.SafeUrl.unwrap(safeUrl);
   assertEquals('javascript:trusted();', extracted);
-  assertEquals('javascript:trusted();', goog.html.SafeUrl.unwrap(safeUrl));
+  assertEquals('javascript:trusted();', safeUrl.getTypedStringValue());
   assertEquals('SafeUrl{javascript:trusted();}', String(safeUrl));
 
   // URLs are always LTR.
@@ -90,9 +90,6 @@ function testSafeUrlSanitize_validatesUrl() {
   assertGoodUrl('http://example.com/');
   assertGoodUrl('https://example.com');
   assertGoodUrl('mailto:foo@example.com');
-  assertGoodUrl('ftp://example.com');
-  assertGoodUrl('ftp://username@example.com');
-  assertGoodUrl('ftp://username:password@example.com');
   // Scheme is case-insensitive
   assertGoodUrl('HTtp://example.com/');
   // Different URL components go through.

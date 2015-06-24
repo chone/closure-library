@@ -57,8 +57,6 @@ class SourceTestCase(unittest.TestCase):
 
     self.assertEqual(set(['foo']),
                      test_source.provides)
-    self.assertEqual(set(['bar']),
-                     test_source.requires)
     self.assertTrue(test_source.is_goog_module)
 
   def testStripComments(self):
@@ -88,7 +86,6 @@ class SourceTestCase(unittest.TestCase):
 
 _TEST_MODULE_SOURCE = """
 goog.module('foo');
-var b = goog.require('bar');
 """
 
 

@@ -18,6 +18,7 @@
  * (such as via usesIframe()) it's important to re-run a lot of the same tests.
  *
  * @author nicksantos@google.com (Nick Santos)
+ * @author jparent@google.com (Julie Parent)
  * @author gboyer@google.com (Garrett Boyer)
  */
 

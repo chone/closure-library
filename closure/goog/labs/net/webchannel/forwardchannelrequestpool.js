@@ -64,7 +64,7 @@ goog.labs.net.webChannel.ForwardChannelRequestPool = function(opt_maxPoolSize) {
   /**
    * The container for all the pending request objects.
    *
-   * @private {goog.structs.Set<ChannelRequest>}
+   * @private {goog.structs.Set.<ChannelRequest>}
    */
   this.requestPool_ = null;
 
@@ -98,9 +98,8 @@ ForwardChannelRequestPool.MAX_POOL_SIZE_ = 10;
  * @private
  */
 ForwardChannelRequestPool.isSpdyEnabled_ = function() {
-  return !!(goog.global.chrome && goog.global.chrome.loadTimes &&
-      goog.global.chrome.loadTimes() &&
-      goog.global.chrome.loadTimes().wasFetchedViaSpdy);
+  return !!(window.chrome && window.chrome.loadTimes &&
+      window.chrome.loadTimes() && window.chrome.loadTimes().wasFetchedViaSpdy);
 };
 
 

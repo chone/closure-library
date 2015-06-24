@@ -69,6 +69,7 @@ goog.ui.FlatButtonRenderer.prototype.createDom = function(button) {
   var element = button.getDomHelper().createDom(
       'div', attributes, button.getContent());
   this.setTooltip(element, button.getTooltip());
+  this.setAriaStates(button, element);
   return element;
 };
 

@@ -17,6 +17,7 @@
  *
  * @author arv@google.com (Erik Arvidsson)
  * @author eae@google.com (Emil A Eklund)
+ * @author jonp@google.com (Jon Perlow)
  *
  * This is a based on the webfx tree control. See file comment in
  * treecontrol.js.

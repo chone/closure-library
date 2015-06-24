@@ -18,6 +18,8 @@
  * DO NOT USE THIS FILE DIRECTLY.  Use goog.dom.Range instead.
  *
  * @author robbyw@google.com (Robby Walker)
+ * @author ojan@google.com (Ojan Vafai)
+ * @author jparent@google.com (Julie Parent)
  */
 
 
@@ -900,7 +902,7 @@ goog.dom.browserrange.IeRange.insertNode_ = function(clone, node,
 
   clone.collapse(before);
   node = goog.dom.browserrange.IeRange.pasteElement_(clone,
-      /** @type {!Element} */ (node), opt_domHelper);
+      /** @type {Element} */ (node), opt_domHelper);
 
   // If we didn't want an element, unwrap the element and return the node.
   if (isNonElement) {

@@ -65,7 +65,7 @@ function testValidationFunction() {
   prompt = new goog.ui.Prompt('title', 'Prompt:', function(result) {
     promptResult = result;
   }, '');
-  prompt.setValidationFunction(goog.functions.not(goog.string.isEmptyOrWhitespace));
+  prompt.setValidationFunction(goog.functions.not(goog.string.isEmpty));
   prompt.setVisible(true);
 
   var buttonSet = prompt.getButtonSet();

@@ -18,6 +18,7 @@
  * in [0, 255].
  *
  * @author doughtie@google.com (Gavin Doughtie)
+ * @author fschneider@google.com (Fritz Schneider)
  */
 
 goog.provide('goog.crypt.base64');
@@ -103,7 +104,7 @@ goog.crypt.base64.HAS_NATIVE_SUPPORT = goog.userAgent.GECKO ||
 /**
  * Base64-encode an array of bytes.
  *
- * @param {Array<number>|Uint8Array} input An array of bytes (numbers with
+ * @param {Array.<number>|Uint8Array} input An array of bytes (numbers with
  *     value in [0, 255]) to encode.
  * @param {boolean=} opt_webSafe Boolean indicating we should use the
  *     alternative alphabet.
@@ -203,7 +204,7 @@ goog.crypt.base64.decodeString = function(input, opt_webSafe) {
  *
  * @param {string} input Input to decode.
  * @param {boolean=} opt_webSafe True if we should use the web-safe alphabet.
- * @return {!Array<number>} bytes representing the decoded value.
+ * @return {!Array} bytes representing the decoded value.
  */
 goog.crypt.base64.decodeStringToByteArray = function(input, opt_webSafe) {
   goog.crypt.base64.init_();

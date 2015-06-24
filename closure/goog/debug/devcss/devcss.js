@@ -81,7 +81,8 @@ goog.debug.DevCss = function(opt_userAgent, opt_userAgentVersion) {
   this.userAgent_ = opt_userAgent;
 
   /**
-   * @const @private
+   * @type {Object}
+   * @private
    */
   this.userAgentTokens_ = {};
 
@@ -101,7 +102,7 @@ goog.debug.DevCss = function(opt_userAgent, opt_userAgentVersion) {
 
   if (this.isIe6OrLess_) {
     /**
-     * @type {Array<{classNames,combinedClassName,els}>}
+     * @type {Array.<{classNames,combinedClassName,els}>}
      * @private
      */
     this.ie6CombinedMatches_ = [];
@@ -416,6 +417,7 @@ goog.debug.DevCss.prototype.addIe6CombinedClassNames_ = function() {
     return;
   }
   var allEls = document.getElementsByTagName('*');
+  var matches = [];
   // Match nodes for all classNames.
   for (var i = 0, classNameEntry; classNameEntry =
       this.ie6CombinedMatches_[i]; i++) {

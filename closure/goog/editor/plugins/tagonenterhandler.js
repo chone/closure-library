@@ -16,7 +16,6 @@
  * @fileoverview TrogEdit plugin to handle enter keys by inserting the
  * specified block level tag.
  *
- * @author robbyw@google.com (Robby Walker)
  */
 
 goog.provide('goog.editor.plugins.TagOnEnterHandler');
@@ -31,8 +30,7 @@ goog.require('goog.editor.plugins.EnterHandler');
 goog.require('goog.editor.range');
 goog.require('goog.editor.style');
 goog.require('goog.events.KeyCodes');
-goog.require('goog.functions');
-goog.require('goog.string.Unicode');
+goog.require('goog.string');
 goog.require('goog.style');
 goog.require('goog.userAgent');
 
@@ -525,10 +523,10 @@ goog.editor.plugins.TagOnEnterHandler.prototype.handleRegularEnterGecko_ =
       // it out of the anchor.
       var anchorToRemove = goog.editor.node.isEmpty(leftAnchor, false) ?
           leftAnchor : rightAnchor;
-      goog.dom.flattenElement(/** @type {!Element} */ (anchorToRemove));
+      goog.dom.flattenElement(/** @type {Element} */ (anchorToRemove));
     }
   }
-  return /** @type {!Element} */ (newNode);
+  return /** @type {Element} */ (newNode);
 };
 
 

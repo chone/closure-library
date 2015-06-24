@@ -37,6 +37,7 @@
  * - getCssClass
  *
  * @author arv@google.com (Erik Arvidsson)
+ * @author reto@google.com (Reto Strobl)
  */
 
 goog.provide('goog.ui.SliderBase');
@@ -820,6 +821,13 @@ goog.ui.SliderBase.prototype.getValueFromMousePosition = function(e) {
 };
 
 
+/**
+ * @deprecated Since 25-June-2012. Use public method getValueFromMousePosition.
+ * @private
+ */
+goog.ui.SliderBase.prototype.getValueFromMousePosition_ =
+    goog.ui.SliderBase.prototype.getValueFromMousePosition;
+
 
 /**
  * @param {HTMLDivElement} thumb  The thumb object.
@@ -1107,6 +1115,13 @@ goog.ui.SliderBase.prototype.getThumbCoordinateForValue = function(val) {
 };
 
 
+/**
+ * @deprecated Since 25-June-2012. Use public method getThumbCoordinateForValue.
+ * @private
+ */
+goog.ui.SliderBase.prototype.getThumbCoordinateForValue_ =
+    goog.ui.SliderBase.prototype.getThumbCoordinateForValue;
+
 
 /**
  * Sets the value and starts animating the handle towards that position.
@@ -1251,6 +1266,7 @@ goog.ui.SliderBase.prototype.addRangeHighlightAnimations_ = function(thumb,
         previousMinCoord.x, previousMaxCoord.x, this.valueThumb.offsetWidth);
     var highlightPositioning = this.calculateRangeHighlightPositioning_(
         minCoord.x, maxCoord.x, this.valueThumb.offsetWidth);
+    var newWidth = highlightPositioning[1];
     var slide = new goog.fx.dom.Slide(this.rangeHighlight,
         [previousHighlightPositioning.offset, this.rangeHighlight.offsetTop],
         [highlightPositioning.offset, this.rangeHighlight.offsetTop],
@@ -1652,6 +1668,6 @@ goog.ui.SliderBase.AnimationFactory = function() {};
  * @param {number} previousValue The previous value (before animation).
  * @param {number} newValue The new value (after animation).
  * @param {number} interval The animation interval.
- * @return {!Array<!goog.fx.TransitionBase>} The additional animations to play.
+ * @return {!Array.<!goog.fx.TransitionBase>} The additional animations to play.
  */
 goog.ui.SliderBase.AnimationFactory.prototype.createAnimations;

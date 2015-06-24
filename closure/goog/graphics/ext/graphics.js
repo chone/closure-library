@@ -21,9 +21,7 @@
 
 goog.provide('goog.graphics.ext.Graphics');
 
-goog.require('goog.events');
 goog.require('goog.events.EventType');
-goog.require('goog.graphics');
 goog.require('goog.graphics.ext.Group');
 
 

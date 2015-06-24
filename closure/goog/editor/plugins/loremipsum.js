@@ -17,7 +17,6 @@
  * empty and does not have the focus. Applies to both editable and uneditable
  * fields.
  *
- * @author nicksantos@google.com (Nick Santos)
  */
 
 goog.provide('goog.editor.plugins.LoremIpsum');
@@ -25,11 +24,9 @@ goog.provide('goog.editor.plugins.LoremIpsum');
 goog.require('goog.asserts');
 goog.require('goog.dom');
 goog.require('goog.editor.Command');
-goog.require('goog.editor.Field');
 goog.require('goog.editor.Plugin');
 goog.require('goog.editor.node');
 goog.require('goog.functions');
-goog.require('goog.userAgent');
 
 
 

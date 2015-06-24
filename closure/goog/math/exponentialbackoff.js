@@ -29,7 +29,6 @@ goog.require('goog.asserts');
 
 
 /**
- * @struct
  * @constructor
  *
  * @param {number} initialValue The initial backoff value.

@@ -82,7 +82,7 @@ goog.labs.net.webChannel.WebChannelBase = function(opt_options,
 
   /**
    * An array of queued maps that need to be sent to the server.
-   * @private {!Array<Wire.QueuedMap>}
+   * @private {!Array.<Wire.QueuedMap>}
    */
   this.outgoingMaps_ = [];
 
@@ -90,7 +90,7 @@ goog.labs.net.webChannel.WebChannelBase = function(opt_options,
    * An array of dequeued maps that we have either received a non-successful
    * response for, or no response at all, and which therefore may or may not
    * have been received by the server.
-   * @private {!Array<Wire.QueuedMap>}
+   * @private {!Array.<Wire.QueuedMap>}
    */
   this.pendingMaps_ = [];
 
@@ -434,7 +434,10 @@ WebChannelBase.Error = {
   BAD_DATA: 10,
 
   /** An error due to a response that is not parsable. */
-  BAD_RESPONSE: 11
+  BAD_RESPONSE: 11,
+
+  /** ActiveX is blocked by the machine's admin settings. */
+  ACTIVE_X_BLOCKED: 12
 };
 
 
@@ -1219,10 +1222,14 @@ WebChannelBase.prototype.startBackChannel_ = function() {
   // Add the reconnect parameters.
   this.addAdditionalParams_(uri);
 
-  uri.setParameterValue('TYPE', 'xmlhttp');
-  this.backChannelRequest_.xmlHttpGet(uri, true /* decodeChunks */,
-      this.hostPrefix_, false /* opt_noClose */);
-
+  if (!ChannelRequest.supportsXhrStreaming()) {
+    uri.setParameterValue('TYPE', 'html');
+    this.backChannelRequest_.tridentGet(uri, Boolean(this.hostPrefix_));
+  } else {
+    uri.setParameterValue('TYPE', 'xmlhttp');
+    this.backChannelRequest_.xmlHttpGet(uri, true /* decodeChunks */,
+        this.hostPrefix_, false /* opt_noClose */);
+  }
   this.channelDebug_.debug('New Request created');
 };
 
@@ -1300,7 +1307,7 @@ WebChannelBase.prototype.onRequestData = function(request, responseText) {
       response = null;
     }
     if (goog.isArray(response) && response.length == 3) {
-      this.handlePostResponse_(/** @type {!Array<?>} */ (response), request);
+      this.handlePostResponse_(/** @type {!Array} */ (response), request);
     } else {
       this.channelDebug_.debug('Bad POST response data returned');
       this.signalError_(WebChannelBase.Error.BAD_RESPONSE);
@@ -1309,9 +1316,9 @@ WebChannelBase.prototype.onRequestData = function(request, responseText) {
     if (this.backChannelRequest_ == request) {
       this.clearDeadBackchannelTimer_();
     }
-    if (!goog.string.isEmptyOrWhitespace(responseText)) {
+    if (!goog.string.isEmpty(responseText)) {
       var response = this.wireCodec_.decodeMessage(responseText);
-      this.onInput_(/** @type {!Array<?>} */ (response));
+      this.onInput_(/** @type {!Array} */ (response));
     }
   }
 };
@@ -1319,8 +1326,7 @@ WebChannelBase.prototype.onRequestData = function(request, responseText) {
 
 /**
  * Handles a POST response from the server.
- * @param {Array<number>} responseValues The key value pairs in
- *     the POST response.
+ * @param {Array} responseValues The key value pairs in the POST response.
  * @param {!ChannelRequest} forwardReq The forward channel request that
  * triggers this function call.
  * @private
@@ -1461,6 +1467,7 @@ WebChannelBase.prototype.clearDeadBackchannelTimer_ = function() {
  */
 WebChannelBase.isFatalError_ = function(error, statusCode) {
   return error == ChannelRequest.Error.UNKNOWN_SESSION_ID ||
+      error == ChannelRequest.Error.ACTIVE_X_BLOCKED ||
       (error == ChannelRequest.Error.STATUS &&
        statusCode > 0);
 };
@@ -1542,6 +1549,9 @@ WebChannelBase.prototype.onRequestComplete = function(request) {
     case ChannelRequest.Error.UNKNOWN_SESSION_ID:
       this.signalError_(WebChannelBase.Error.UNKNOWN_SESSION_ID);
       break;
+    case ChannelRequest.Error.ACTIVE_X_BLOCKED:
+      this.signalError_(WebChannelBase.Error.ACTIVE_X_BLOCKED);
+      break;
     default:
       this.signalError_(WebChannelBase.Error.REQUEST_FAILED);
       break;
@@ -1581,8 +1591,7 @@ WebChannelBase.prototype.setRetryDelay = function(baseDelayMs, delaySeedMs) {
 
 /**
  * Processes the data returned by the server.
- * @param {!Array<!Array<?>>} respArray The response array returned
- *     by the server.
+ * @param {!Array.<!Array>} respArray The response array returned by the server.
  * @private
  */
 WebChannelBase.prototype.onInput_ = function(respArray) {
@@ -1795,7 +1804,7 @@ WebChannelBase.prototype.createDataUri =
 
     uri.setPort(opt_overridePort || uri.getPort());
   } else {
-    var locationPage = goog.global.location;
+    var locationPage = window.location;
     var hostName;
     if (hostPrefix) {
       hostName = hostPrefix + '.' + locationPage.hostname;
@@ -1849,7 +1858,8 @@ WebChannelBase.prototype.isActive = function() {
  * @override
  */
 WebChannelBase.prototype.shouldUseSecondaryDomains = function() {
-  return this.supportsCrossDomainXhrs_;
+  return this.supportsCrossDomainXhrs_ ||
+      !ChannelRequest.supportsXhrStreaming();
 };
 
 
@@ -1951,7 +1961,7 @@ WebChannelBase.Handler = function() {};
 /**
  * Callback handler for when a batch of response arrays is received from the
  * server. When null, batched dispatching is disabled.
- * @type {?function(!WebChannelBase, !Array<!Array<?>>)}
+ * @type {?function(!WebChannelBase, !Array.<!Array>)}
  */
 WebChannelBase.Handler.prototype.channelHandleMultipleArrays = null;
 
@@ -1983,7 +1993,7 @@ WebChannelBase.Handler.prototype.channelOpened = function(channel) {
  * New input is available for the application to process.
  *
  * @param {WebChannelBase} channel The channel.
- * @param {Array<?>} array The data array.
+ * @param {Array} array The data array.
  */
 WebChannelBase.Handler.prototype.channelHandleArray = function(channel, array) {
 };
@@ -1993,7 +2003,7 @@ WebChannelBase.Handler.prototype.channelHandleArray = function(channel, array) {
  * Indicates maps were successfully sent on the channel.
  *
  * @param {WebChannelBase} channel The channel.
- * @param {Array<Wire.QueuedMap>} deliveredMaps The
+ * @param {Array.<Wire.QueuedMap>} deliveredMaps The
  *     array of maps that have been delivered to the server. This is a direct
  *     reference to the internal array, so a copy should be made
  *     if the caller desires a reference to the data.
@@ -2017,10 +2027,10 @@ WebChannelBase.Handler.prototype.channelError = function(channel, error) {
  * Indicates the WebChannel is closed. Also notifies about which maps,
  * if any, that may not have been delivered to the server.
  * @param {WebChannelBase} channel The channel.
- * @param {Array<Wire.QueuedMap>=} opt_pendingMaps The
+ * @param {Array.<Wire.QueuedMap>=} opt_pendingMaps The
  *     array of pending maps, which may or may not have been delivered to the
  *     server.
- * @param {Array<Wire.QueuedMap>=} opt_undeliveredMaps
+ * @param {Array.<Wire.QueuedMap>=} opt_undeliveredMaps
  *     The array of undelivered maps, which have definitely not been delivered
  *     to the server.
  */
@@ -2033,7 +2043,8 @@ WebChannelBase.Handler.prototype.channelClosed =
  * Gets any parameters that should be added at the time another connection is
  * made to the server.
  * @param {WebChannelBase} channel The channel.
- * @return {!Object} Extra parameter keys and values to add to the requests.
+ * @return {!Object} Extra parameter keys and values to add to the
+ *                  requests.
  */
 WebChannelBase.Handler.prototype.getAdditionalParams = function(channel) {
   return {};

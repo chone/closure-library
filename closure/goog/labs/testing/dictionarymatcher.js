@@ -25,9 +25,10 @@ goog.provide('goog.labs.testing.HasKeyMatcher');
 goog.provide('goog.labs.testing.HasValueMatcher');
 
 
+goog.require('goog.array');
 goog.require('goog.asserts');
 goog.require('goog.labs.testing.Matcher');
-goog.require('goog.object');
+goog.require('goog.string');
 
 
 

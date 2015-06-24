@@ -16,6 +16,7 @@
  * @fileoverview Functions and objects for date representation and manipulation.
  *
  * @author eae@google.com (Emil A Eklund)
+ * @author pallosp@google.com (Peter Pallos)
  */
 
 goog.provide('goog.date');
@@ -273,9 +274,9 @@ goog.date.getWeekNumber = function(year, month, date, opt_weekDay,
 
 
 /**
- * @param {T} date1 A datelike object.
- * @param {S} date2 Another datelike object.
- * @return {T|S} The earlier of them in time.
+ * @param {!T} date1 A datelike object.
+ * @param {!S} date2 Another datelike object.
+ * @return {!(T|S)} The earlier of them in time.
  * @template T,S
  */
 goog.date.min = function(date1, date2) {
@@ -284,9 +285,9 @@ goog.date.min = function(date1, date2) {
 
 
 /**
- * @param {T} date1 A datelike object.
- * @param {S} date2 Another datelike object.
- * @return {T|S} The later of them in time.
+ * @param {!T} date1 A datelike object.
+ * @param {!S} date2 Another datelike object.
+ * @return {!(T|S)} The later of them in time.
  * @template T,S
  */
 goog.date.max = function(date1, date2) {
@@ -742,9 +743,9 @@ goog.date.Interval.prototype.add = function(interval) {
  * expecting Date objects this class is marked as extending the built in Date
  * object even though that's not strictly true.
  *
- * @param {number|goog.date.DateLike=} opt_year Four digit year or a date-like
- *     object. If not set, the created object will contain the date
- *     determined by goog.now().
+ * @param {number|Object=} opt_year Four digit year or a date-like object. If
+ *     not set, the created object will contain the date determined by
+ *     goog.now().
  * @param {number=} opt_month Month, 0 = Jan, 11 = Dec.
  * @param {number=} opt_date Date of month, 1 - 31.
  * @constructor
@@ -1323,7 +1324,7 @@ goog.date.Date.compare = function(date1, date2) {
  *     goog.now().
  * @param {number=} opt_month Month, 0 = Jan, 11 = Dec.
  * @param {number=} opt_date Date of month, 1 - 31.
- * @param {number=} opt_hours Hours, 0 - 23.
+ * @param {number=} opt_hours Hours, 0 - 24.
  * @param {number=} opt_minutes Minutes, 0 - 59.
  * @param {number=} opt_seconds Seconds, 0 - 61.
  * @param {number=} opt_milliseconds Milliseconds, 0 - 999.

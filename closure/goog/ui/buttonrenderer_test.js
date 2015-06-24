@@ -130,9 +130,7 @@ function testCreateDomAriaState() {
 function testUseAriaPressedForSelected() {
   button.setSupportedState(goog.ui.Component.State.SELECTED, true);
   button.setSelected(true);
-  button.setRenderer(buttonRenderer);
-  button.render();
-  var element = button.getElement();
+  var element = buttonRenderer.createDom(button);
 
   assertEquals('button\'s aria-pressed attribute must be true', 'true',
       goog.a11y.aria.getState(element, goog.a11y.aria.State.PRESSED));
@@ -142,9 +140,7 @@ function testUseAriaPressedForSelected() {
 
 function testAriaDisabled() {
   button.setEnabled(false);
-  button.setRenderer(buttonRenderer);
-  button.render();
-  var element = button.getElement();
+  var element = buttonRenderer.createDom(button);
 
   assertEquals('button\'s aria-disabled attribute must be true', 'true',
       goog.a11y.aria.getState(element, goog.a11y.aria.State.DISABLED));

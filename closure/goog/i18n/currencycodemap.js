@@ -34,7 +34,8 @@ goog.provide('goog.i18n.currencyCodeMapTier2');
  *     goog.object.extend(goog.i18n.currencyCodeMap,
  *                        goog.i18n.currencyCodeMapTier2);
  *
- * @const {!Object<string, string>}
+ * @type {Object}
+ * @const
  */
 goog.i18n.currencyCodeMap = {
   'AED': '\u062F\u002e\u0625',
@@ -84,6 +85,7 @@ goog.i18n.currencyCodeMap = {
   'SAR': '\u0633\u002E\u0631',
   'SEK': 'kr',
   'SGD': '$',
+  'SKK': 'Sk',
   'SYP': 'SYP',
   'THB': '\u0e3f',
   'TRY': 'TL',
@@ -103,13 +105,14 @@ goog.i18n.currencyCodeMap = {
  * This group of currency data is unlikely to be used. In case they are,
  * program need to merge it into goog.locale.CurrencyCodeMap.
  *
- * @const {!Object<string, string>}
+ * @type {Object}
+ * @const
  */
 goog.i18n.currencyCodeMapTier2 = {
   'AFN': '\u060b',
   'ALL': 'Lek',
   'AMD': '\u0564\u0580\u002e',
-  'ANG': 'ANf.',
+  'ANG': '\u0083',
   'AOA': 'Kz',
   'AWG': '\u0192',
   'AZN': 'm',
@@ -127,10 +130,10 @@ goog.i18n.currencyCodeMapTier2 = {
   'BYR': 'Br',
   'BZD': '$',
   'CDF': 'F',
-  'CUC': 'CUC$',
   'CVE': '$',
   'DJF': 'Fdj',
   'DZD': '\u062f\u062C',
+  'EEK': 'EEK',
   'ERN': 'Nfk',
   'ETB': 'Br',
   'FJD': '$',
@@ -187,10 +190,10 @@ goog.i18n.currencyCodeMapTier2 = {
   'SLL': 'Le',
   'SOS': 'So. Sh.',
   'SRD': '$',
-  'SSP': '£',
   'STD': 'Db',
   'SZL': 'L',
   'TJS': 'TJS',
+  'TMM': 'm',
   'TND': '\u062F\u002e\u062A ',
   'TOP': 'T$',
   'TTD': '$',
@@ -202,6 +205,6 @@ goog.i18n.currencyCodeMapTier2 = {
   'WST': 'WS$',
   'XOF': 'CFA',
   'XPF': 'F',
-  'ZMW': 'ZMW',
+  'ZMK': 'ZK',
   'ZWD': '$'
 };

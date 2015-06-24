@@ -21,7 +21,6 @@
 goog.provide('goog.debug.Trace');
 
 goog.require('goog.array');
-goog.require('goog.debug.Logger');
 goog.require('goog.iter');
 goog.require('goog.log');
 goog.require('goog.structs.Map');
@@ -40,7 +39,7 @@ goog.debug.Trace_ = function() {
 
   /**
    * Events in order.
-   * @type {Array<goog.debug.Trace_.Event_>}
+   * @type {Array.<goog.debug.Trace_.Event_>}
    * @private
    */
   this.events_ = [];

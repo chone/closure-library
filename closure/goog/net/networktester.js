@@ -211,15 +211,6 @@ goog.net.NetworkTester.prototype.getUri = function() {
 
 
 /**
- * Returns the current attempt count.
- * @return {number} The attempt count.
- */
-goog.net.NetworkTester.prototype.getAttemptCount = function() {
-  return this.attempt_;
-};
-
-
-/**
  * Sets the uri to use for the test.
  * @param {goog.Uri} uri The uri for the test.
  */

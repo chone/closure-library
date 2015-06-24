@@ -272,7 +272,20 @@ function testAllowsMultiKeySequenceSpecifiedAsArray() {
   handler.registerShortcut('quitemacs',
       [KeyCodes.X, Modifiers.CTRL,
        KeyCodes.C]);
-  assertFalse(fire(KeyCodes.X, {ctrlKey: true}));
+  fire(KeyCodes.X, {ctrlKey: true});
+  fire(KeyCodes.C);
+
+  listener.$verify();
+}
+
+function testAllowsMultiKeySequenceSpecifiedAsArray() {
+  listener.shortcutFired('quitemacs');
+  listener.$replay();
+
+  handler.registerShortcut('quitemacs',
+      [KeyCodes.X, Modifiers.CTRL,
+       KeyCodes.C]);
+  fire(KeyCodes.X, {ctrlKey: true});
   fire(KeyCodes.C);
 
   listener.$verify();
@@ -287,8 +300,8 @@ function testAllowsMultiKeySequenceSpecifiedAsArguments() {
       KeyCodes.Q, Modifiers.NONE,
       KeyCodes.NUM_ONE, Modifiers.SHIFT);
   var shiftProperties = { shiftKey: true };
-  assertFalse(fire(KeyCodes.SEMICOLON, shiftProperties));
-  assertFalse(fire(KeyCodes.Q));
+  fire(KeyCodes.SEMICOLON, shiftProperties);
+  fire(KeyCodes.Q);
   fire(KeyCodes.NUM_ONE, shiftProperties);
 
   listener.$verify();
@@ -390,63 +403,22 @@ function testCanRemoveTwoHandlers() {
   listener.$verify();
 }
 
-function testIsShortcutRegistered_single() {
+function testCheckRegisteredShortcuts() {
   assertFalse(handler.isShortcutRegistered('x'));
   handler.registerShortcut('letterex', 'x');
   assertTrue(handler.isShortcutRegistered('x'));
+
+  handler.registerShortcut('qe', [KeyCodes.X, Modifiers.CTRL, KeyCodes.C]);
+  assertTrue(handler.isShortcutRegistered('x'));
+  assertTrue(handler.isShortcutRegistered([KeyCodes.X,
+                                           Modifiers.CTRL, KeyCodes.C]));
   handler.unregisterShortcut('x');
   assertFalse(handler.isShortcutRegistered('x'));
-}
-
-function testIsShortcutRegistered_multi() {
-  assertFalse(handler.isShortcutRegistered('a'));
-  assertFalse(handler.isShortcutRegistered('a b'));
-  assertFalse(handler.isShortcutRegistered('a b c'));
-
-  handler.registerShortcut('ab', 'a b');
-
-  assertFalse(handler.isShortcutRegistered('a'));
-  assertTrue(handler.isShortcutRegistered('a b'));
-  assertFalse(handler.isShortcutRegistered('a b c'));
-
-  handler.unregisterShortcut('a b');
-
-  assertFalse(handler.isShortcutRegistered('a'));
-  assertFalse(handler.isShortcutRegistered('a b'));
-  assertFalse(handler.isShortcutRegistered('a b c'));
-}
-
-function testUnregister_subsequence() {
-  // Unregistering a partial sequence should not orphan shortcuts further in the
-  // sequence.
-  handler.registerShortcut('abc', 'a b c');
-  handler.unregisterShortcut('a b');
-  assertTrue(handler.isShortcutRegistered('a b c'));
-}
-
-function testUnregister_supersequence() {
-  // Unregistering a sequence that extends beyond a registered sequence should
-  // do nothing.
-  handler.registerShortcut('ab', 'a b');
-  handler.unregisterShortcut('a b c');
-  assertTrue(handler.isShortcutRegistered('a b'));
-}
-
-function testUnregister_partialMatchSequence() {
-  // Unregistering a sequence that partially matches a registered sequence
-  // should do nothing.
-  handler.registerShortcut('abc', 'a b c');
-  handler.unregisterShortcut('a b x');
-  assertTrue(handler.isShortcutRegistered('a b c'));
-}
-
-function testUnregister_deadBranch() {
-  // Unregistering a sequence should prune any dead branches in the tree.
-  handler.registerShortcut('abc', 'a b c');
-  handler.unregisterShortcut('a b c');
-  // Default is not should not be prevented in the A key stroke because the A
-  // branch has been removed from the tree.
-  assertTrue(fire(KeyCodes.A));
+  assertTrue(handler.isShortcutRegistered([KeyCodes.X,
+                                           Modifiers.CTRL, KeyCodes.C]));
+  handler.unregisterShortcut([KeyCodes.X, Modifiers.CTRL, KeyCodes.C]);
+  assertFalse(handler.isShortcutRegistered([KeyCodes.X,
+                                            Modifiers.CTRL, KeyCodes.C]));
 }
 
 
@@ -506,8 +478,8 @@ function testIgnoreNonGlobalShortcutsInTextArea() {
 
 /**
  * Checks that the shortcuts are fired on each target.
- * @param {Array<string>} shortcuts A list of shortcut identifiers.
- * @param {Array<string>} targets A list of element IDs.
+ * @param {Array.<string>} shortcuts A list of shortcut identifiers.
+ * @param {Array.<string>} targets A list of element IDs.
  * @param {function(Element)} fireEvents Function that fires events.
  */
 function expectShortcutsOnTargets(shortcuts, targets, fireEvents) {
@@ -718,20 +690,4 @@ function testGeckoShortcuts() {
   }
 
   listener.$verify();
-}
-
-function testRegisterShortcut_modifierOnly() {
-  assertThrows('Registering a shortcut with just modifiers should fail.',
-      goog.bind(handler.registerShortcut, handler, 'name', 'Shift'));
-}
-
-function testParseStringShortcut_unknownKey() {
-  assertThrows('Unknown keys should fail.', goog.bind(
-      goog.ui.KeyboardShortcutHandler.parseStringShortcut, null, 'NotAKey'));
-}
-
-// Regression test for failure to reset keyCode between strokes.
-function testParseStringShortcut_resetKeyCode() {
-  var strokes = goog.ui.KeyboardShortcutHandler.parseStringShortcut('A Shift');
-  assertNull('The second stroke only has a modifier key.', strokes[1].keyCode);
 }

@@ -59,8 +59,7 @@ goog.ui.ToolbarSeparatorRenderer.CSS_CLASS =
 goog.ui.ToolbarSeparatorRenderer.prototype.createDom = function(separator) {
   // 00A0 is &nbsp;
   return separator.getDomHelper().createDom('div',
-      this.getClassNames(separator).join(' ') +
-          ' ' + goog.ui.INLINE_BLOCK_CLASSNAME,
+      this.getCssClass() + ' ' + goog.ui.INLINE_BLOCK_CLASSNAME,
       '\u00A0');
 };
 

@@ -24,6 +24,7 @@
  * curves of arbitrary degree.
  *
  * @author robbyw@google.com (Robby Walker)
+ * @author wcrosby@google.com (Wayne Crosby)
  */
 
 goog.provide('goog.math.Bezier');
@@ -43,7 +44,6 @@ goog.require('goog.math.Coordinate');
  * @param {number} y2 Y coordinate of the second control point.
  * @param {number} x3 X coordinate of the end point.
  * @param {number} y3 Y coordinate of the end point.
- * @struct
  * @constructor
  * @final
  */

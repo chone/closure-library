@@ -134,6 +134,7 @@ class DepsTree(object):
         DepsTree._ResolveDependencies(require, deps_list, provides_map,
                                       traversal_path)
       deps_list.append(source)
+ 
 
       traversal_path.pop()
 

@@ -15,8 +15,9 @@
 goog.provide('goog.fsTest');
 goog.setTestOnly('goog.fsTest');
 
-goog.require('goog.Promise');
 goog.require('goog.array');
+goog.require('goog.async.Deferred');
+goog.require('goog.async.DeferredList');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.fs');
@@ -25,6 +26,7 @@ goog.require('goog.fs.Error');
 goog.require('goog.fs.FileReader');
 goog.require('goog.fs.FileSaver');
 goog.require('goog.string');
+goog.require('goog.testing.AsyncTestCase');
 goog.require('goog.testing.PropertyReplacer');
 goog.require('goog.testing.jsunit');
 
@@ -33,6 +35,8 @@ var TEST_DIR = 'goog-fs-test-dir';
 var fsExists = goog.isDef(goog.global.requestFileSystem) ||
     goog.isDef(goog.global.webkitRequestFileSystem);
 var deferredFs = fsExists ? goog.fs.getTemporary() : null;
+var asyncTestCase = goog.testing.AsyncTestCase.createAndInstall();
+asyncTestCase.stepTimeout = 5000;
 var stubs = new goog.testing.PropertyReplacer();
 
 function setUpPage() {
@@ -40,7 +44,7 @@ function setUpPage() {
     return;
   }
 
-  return loadTestDir().then(null, function(err) {
+  loadTestDir().addErrback(function(err) {
     var msg;
     if (err.code == goog.fs.Error.ErrorCode.QUOTA_EXCEEDED) {
       msg = err.message + '. If you\'re using Chrome, you probably need to ' +
@@ -62,15 +66,20 @@ function tearDown() {
     return;
   }
 
-  return loadTestDir().then(function(dir) { return dir.removeRecursively(); });
+  loadTestDir().
+      addCallback(function(dir) { return dir.removeRecursively(); }).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('removing filesystem');
 }
 
 function testUnavailableTemporaryFilesystem() {
   stubs.set(goog.global, 'requestFileSystem', null);
   stubs.set(goog.global, 'webkitRequestFileSystem', null);
+  asyncTestCase.waitForAsync('testUnavailableTemporaryFilesystem');
 
-  return goog.fs.getTemporary(1024).then(fail, function(e) {
+  goog.fs.getTemporary(1024).addErrback(function(e) {
     assertEquals('File API unsupported', e.message);
+    continueTesting();
   });
 }
 
@@ -78,9 +87,11 @@ function testUnavailableTemporaryFilesystem() {
 function testUnavailablePersistentFilesystem() {
   stubs.set(goog.global, 'requestFileSystem', null);
   stubs.set(goog.global, 'webkitRequestFileSystem', null);
+  asyncTestCase.waitForAsync('testUnavailablePersistentFilesystem');
 
-  return goog.fs.getPersistent(2048).then(fail, function(e) {
+  goog.fs.getPersistent(2048).addErrback(function(e) {
     assertEquals('File API unsupported', e.message);
+    continueTesting();
   });
 }
 
@@ -90,11 +101,12 @@ function testIsFile() {
     return;
   }
 
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).then(
-      function(fileEntry) {
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(function(fileEntry) {
         assertFalse(fileEntry.isDirectory());
         assertTrue(fileEntry.isFile());
-      });
+      }).addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testIsFile');
 }
 
 function testIsDirectory() {
@@ -102,11 +114,12 @@ function testIsDirectory() {
     return;
   }
 
-  return loadDirectory('test', goog.fs.DirectoryEntry.Behavior.CREATE).then(
-      function(fileEntry) {
+  loadDirectory('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(function(fileEntry) {
         assertTrue(fileEntry.isDirectory());
         assertFalse(fileEntry.isFile());
-      });
+      }).addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testIsDirectory');
 }
 
 function testReadFileUtf16() {
@@ -120,9 +133,11 @@ function testReadFileUtf16() {
     arr[i] = str.charCodeAt(i);
   }
 
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(goog.partial(writeToFile, arr.buffer)).
-      then(goog.partial(checkFileContentWithEncoding, str, 'UTF-16'));
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(goog.partial(writeToFile, arr.buffer)).
+      addCallback(goog.partial(checkFileContentWithEncoding, str, 'UTF-16')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testReadFile');
 }
 
 function testReadFileUtf8() {
@@ -136,9 +151,11 @@ function testReadFileUtf8() {
     arr[i] = str.charCodeAt(i) & 0xff;
   }
 
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(goog.partial(writeToFile, arr.buffer)).
-      then(goog.partial(checkFileContentWithEncoding, str, 'UTF-8'));
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(goog.partial(writeToFile, arr.buffer)).
+      addCallback(goog.partial(checkFileContentWithEncoding, str, 'UTF-8')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testReadFileUtf8');
 }
 
 function testReadFileAsArrayBuffer() {
@@ -152,10 +169,12 @@ function testReadFileAsArrayBuffer() {
     arr[i] = str.charCodeAt(i) & 0xff;
   }
 
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(goog.partial(writeToFile, arr.buffer)).
-      then(goog.partial(checkFileContentAs, arr.buffer, 'ArrayBuffer',
-          undefined));
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(goog.partial(writeToFile, arr.buffer)).
+      addCallback(goog.partial(checkFileContentAs, arr.buffer, 'ArrayBuffer',
+          undefined)).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testReadFileAsArrayBuffer');
 }
 
 function testReadFileAsBinaryString() {
@@ -169,9 +188,12 @@ function testReadFileAsBinaryString() {
     arr[i] = str.charCodeAt(i);
   }
 
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(goog.partial(writeToFile, arr.buffer)).
-      then(goog.partial(checkFileContentAs, str, 'BinaryString', undefined));
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(goog.partial(writeToFile, arr.buffer)).
+      addCallback(goog.partial(checkFileContentAs, str, 'BinaryString',
+          undefined)).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testReadFileAsArrayBuffer');
 }
 
 function testWriteFile() {
@@ -179,9 +201,11 @@ function testWriteFile() {
     return;
   }
 
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(goog.partial(writeToFile, 'test content')).
-      then(goog.partial(checkFileContent, 'test content'));
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(goog.partial(writeToFile, 'test content')).
+      addCallback(goog.partial(checkFileContent, 'test content')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testWriteFile');
 }
 
 function testRemoveFile() {
@@ -189,10 +213,12 @@ function testRemoveFile() {
     return;
   }
 
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(goog.partial(writeToFile, 'test content')).
-      then(function(file) { return file.remove(); }).
-      then(goog.partial(checkFileRemoved, 'test'));
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(goog.partial(writeToFile, 'test content')).
+      addCallback(function(file) { return file.remove(); }).
+      addCallback(goog.partial(checkFileRemoved, 'test')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testRemoveFile');
 }
 
 function testMoveFile() {
@@ -204,11 +230,13 @@ function testMoveFile() {
       'subdir', goog.fs.DirectoryEntry.Behavior.CREATE);
   var deferredWrittenFile =
       loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(goog.partial(writeToFile, 'test content'));
-  return goog.Promise.all([deferredSubdir, deferredWrittenFile]).
-      then(splitArgs(function(dir, file) { return file.moveTo(dir); })).
-      then(goog.partial(checkFileContent, 'test content')).
-      then(goog.partial(checkFileRemoved, 'test'));
+      addCallback(goog.partial(writeToFile, 'test content'));
+  goog.async.DeferredList.gatherResults([deferredSubdir, deferredWrittenFile]).
+      addCallback(splitArgs(function(dir, file) { return file.moveTo(dir); })).
+      addCallback(goog.partial(checkFileContent, 'test content')).
+      addCallback(goog.partial(checkFileRemoved, 'test')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testMoveFile');
 }
 
 function testCopyFile() {
@@ -219,13 +247,15 @@ function testCopyFile() {
   var deferredFile = loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE);
   var deferredSubdir = loadDirectory(
       'subdir', goog.fs.DirectoryEntry.Behavior.CREATE);
-  var deferredWrittenFile = deferredFile.then(
-      goog.partial(writeToFile, 'test content'));
-  return goog.Promise.all([deferredSubdir, deferredWrittenFile]).
-      then(splitArgs(function(dir, file) { return file.copyTo(dir); })).
-      then(goog.partial(checkFileContent, 'test content')).
-      then(function() { return deferredFile; }).
-      then(goog.partial(checkFileContent, 'test content'));
+  var deferredWrittenFile = deferredFile.branch().
+      addCallback(goog.partial(writeToFile, 'test content'));
+  goog.async.DeferredList.gatherResults([deferredSubdir, deferredWrittenFile]).
+      addCallback(splitArgs(function(dir, file) { return file.copyTo(dir); })).
+      addCallback(goog.partial(checkFileContent, 'test content')).
+      awaitDeferred(deferredFile).
+      addCallback(goog.partial(checkFileContent, 'test content')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testMoveFile');
 }
 
 function testAbortWrite() {
@@ -238,17 +268,15 @@ function testAbortWrite() {
   }
 
   var deferredFile = loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE);
-  return deferredFile.
-      then(goog.partial(startWrite, 'test content')).
-      then(function(writer) {
-        return new goog.Promise(function(resolve) {
-          goog.events.listenOnce(
-              writer, goog.fs.FileSaver.EventType.ABORT, resolve);
-          writer.abort();
-        });
-      }).
-      then(function() { return loadFile('test'); }).
-      then(goog.partial(checkFileContent, ''));
+  deferredFile.branch().
+      addCallback(goog.partial(startWrite, 'test content')).
+      addCallback(function(writer) { writer.abort(); }).
+      addCallback(
+          goog.partial(waitForEvent, goog.fs.FileSaver.EventType.ABORT)).
+      awaitDeferred(deferredFile).
+      addCallback(goog.partial(checkFileContent, '')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testWriteFile');
 }
 
 function testSeek() {
@@ -257,22 +285,23 @@ function testSeek() {
   }
 
   var deferredFile = loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE);
-  return deferredFile.
-      then(goog.partial(writeToFile, 'test content')).
-      then(function(file) { return file.createWriter(); }).
-      then(
+  deferredFile.branch().
+      addCallback(goog.partial(writeToFile, 'test content')).
+      addCallback(function(file) { return file.createWriter(); }).
+      addCallback(
           goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.INIT)).
-      then(function(writer) {
+      addCallback(function(writer) {
         writer.seek(5);
         writer.write(goog.fs.getBlob('stuff and things'));
-        return writer;
       }).
-      then(
+      addCallback(
           goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.WRITING)).
-      then(
+      addCallback(
           goog.partial(waitForEvent, goog.fs.FileSaver.EventType.WRITE)).
-      then(function() { return deferredFile; }).
-      then(goog.partial(checkFileContent, 'test stuff and things'));
+      awaitDeferred(deferredFile).
+      addCallback(goog.partial(checkFileContent, 'test stuff and things')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testWriteFile');
 }
 
 function testTruncate() {
@@ -281,20 +310,20 @@ function testTruncate() {
   }
 
   var deferredFile = loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE);
-  return deferredFile.
-      then(goog.partial(writeToFile, 'test content')).
-      then(function(file) { return file.createWriter(); }).
-      then(goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.INIT)).
-      then(function(writer) {
-        writer.truncate(4);
-        return writer;
-      }).
-      then(
+  deferredFile.branch().
+      addCallback(goog.partial(writeToFile, 'test content')).
+      addCallback(function(file) { return file.createWriter(); }).
+      addCallback(
+          goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.INIT)).
+      addCallback(function(writer) { writer.truncate(4); }).
+      addCallback(
           goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.WRITING)).
-      then(
+      addCallback(
           goog.partial(waitForEvent, goog.fs.FileSaver.EventType.WRITE)).
-      then(function() { return deferredFile; }).
-      then(goog.partial(checkFileContent, 'test'));
+      awaitDeferred(deferredFile).
+      addCallback(goog.partial(checkFileContent, 'test')).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testWriteFile');
 }
 
 function testGetLastModified() {
@@ -302,13 +331,16 @@ function testGetLastModified() {
     return;
   }
   var now = goog.now();
-  return loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(function(entry) { return entry.getLastModified(); }).
-      then(function(date) {
+  loadFile('test', goog.fs.DirectoryEntry.Behavior.CREATE).
+      addCallback(function(entry) {
+        return entry.getLastModified();
+      }).addCallback(function(date) {
         assertRoughlyEquals('Expected the last modified date to be within ' +
-           'a few milliseconds of the test start time.',
-           now, date.getTime(), 2000);
-      });
+                            'a few milliseconds of the test start time.',
+                            now, date.getTime(), 2000);
+      }).addCallback(continueTesting);
+
+  asyncTestCase.waitForAsync('testGetLastModified');
 }
 
 function testCreatePath() {
@@ -316,17 +348,19 @@ function testCreatePath() {
     return;
   }
 
-  return loadTestDir().
-      then(function(testDir) {
+  loadTestDir().
+      addCallback(function(testDir) {
         return testDir.createPath('foo');
       }).
-      then(function(fooDir) {
+      addCallback(function(fooDir) {
         assertEquals('/goog-fs-test-dir/foo', fooDir.getFullPath());
         return fooDir.createPath('bar/baz/bat');
       }).
-      then(function(batDir) {
+      addCallback(function(batDir) {
         assertEquals('/goog-fs-test-dir/foo/bar/baz/bat', batDir.getFullPath());
-      });
+      }).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testCreatePath');
 }
 
 function testCreateAbsolutePath() {
@@ -334,13 +368,15 @@ function testCreateAbsolutePath() {
     return;
   }
 
-  return loadTestDir().
-      then(function(testDir) {
+  loadTestDir().
+      addCallback(function(testDir) {
         return testDir.createPath('/' + TEST_DIR + '/fee/fi/fo/fum');
       }).
-      then(function(absDir) {
+      addCallback(function(absDir) {
         assertEquals('/goog-fs-test-dir/fee/fi/fo/fum', absDir.getFullPath());
-      });
+      }).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testCreateAbsolutePath');
 }
 
 function testCreateRelativePath() {
@@ -348,25 +384,28 @@ function testCreateRelativePath() {
     return;
   }
 
-  return loadTestDir().
-      then(function(dir) {
+  loadTestDir().
+      addCallback(function(dir) {
         return dir.createPath('../' + TEST_DIR + '/dir');
       }).
-      then(function(relDir) {
+      addCallback(function(relDir) {
         assertEquals('/goog-fs-test-dir/dir', relDir.getFullPath());
         return relDir.createPath('.');
       }).
-      then(function(sameDir) {
+      addCallback(function(sameDir) {
         assertEquals('/goog-fs-test-dir/dir', sameDir.getFullPath());
         return sameDir.createPath('./././.');
       }).
-      then(function(reallySameDir) {
+      addCallback(function(reallySameDir) {
         assertEquals('/goog-fs-test-dir/dir', reallySameDir.getFullPath());
         return reallySameDir.createPath('./new/../..//dir/./new////.');
       }).
-      then(function(newDir) {
+      addCallback(function(newDir) {
         assertEquals('/goog-fs-test-dir/dir/new', newDir.getFullPath());
-      });
+      }).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testCreateRelativePath');
+
 }
 
 function testCreateBadPath() {
@@ -374,26 +413,28 @@ function testCreateBadPath() {
     return;
   }
 
-  return loadTestDir().
-      then(function() { return loadTestDir(); }).
-      then(function(dir) {
+  loadTestDir().
+      awaitDeferred(loadTestDir()).
+      addCallback(function(dir) {
         // There is only one layer of parent directory from the test dir.
         return dir.createPath('../../../../' + TEST_DIR + '/baz/bat');
       }).
-      then(function(batDir) {
+      addCallback(function(batDir) {
         assertEquals('The parent directory of the root directory should ' +
                      'point back to the root directory.',
                      '/goog-fs-test-dir/baz/bat', batDir.getFullPath());
       }).
 
-      then(function() { return loadTestDir(); }).
-      then(function(dir) {
+      awaitDeferred(loadTestDir()).
+      addCallback(function(dir) {
         // An empty path should return the same as the input directory.
         return dir.createPath('');
       }).
-      then(function(testDir) {
+      addCallback(function(testDir) {
         assertEquals('/goog-fs-test-dir', testDir.getFullPath());
-      });
+      }).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testCreateBadPath');
 }
 
 function testGetAbsolutePaths() {
@@ -401,33 +442,48 @@ function testGetAbsolutePaths() {
     return;
   }
 
-  return loadFile('foo', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(function() { return loadTestDir(); }).
-      then(function(testDir) { return testDir.getDirectory('/'); }).
-      then(function(root) {
+  loadFile('foo', goog.fs.DirectoryEntry.Behavior.CREATE).
+      awaitDeferred(loadTestDir()).
+      addCallback(function(testDir) {
+        return testDir.getDirectory('/');
+      }).
+      addCallback(function(root) {
         assertEquals('/', root.getFullPath());
         return root.getDirectory('/' + TEST_DIR);
       }).
-      then(function(testDir) {
+      addCallback(function(testDir) {
         assertEquals('/goog-fs-test-dir', testDir.getFullPath());
         return testDir.getDirectory('//' + TEST_DIR + '////');
       }).
-      then(function(testDir) {
+      addCallback(function(testDir) {
         assertEquals('/goog-fs-test-dir', testDir.getFullPath());
         return testDir.getDirectory('////');
       }).
-      then(function(testDir) { assertEquals('/', testDir.getFullPath()); });
+      addCallback(function(testDir) {
+        assertEquals('/', testDir.getFullPath());
+      }).
+      addBoth(continueTesting);
+  asyncTestCase.waitForAsync('testGetAbsolutePaths');
 }
 
+
+function continueTesting(result) {
+  asyncTestCase.continueTesting();
+  if (result instanceof Error) {
+    throw result;
+  }
+}
 
 function testListEmptyDirectory() {
   if (!fsExists) {
     return;
   }
 
-  return loadTestDir().
-      then(function(dir) { return dir.listDirectory(); }).
-      then(function(entries) { assertArrayEquals([], entries); });
+  loadTestDir().
+      addCallback(function(dir) { return dir.listDirectory(); }).
+      addCallback(function(entries) { assertArrayEquals([], entries); }).
+      addCallback(continueTesting);
+  asyncTestCase.waitForAsync('testListEmptyDirectory');
 }
 
 
@@ -436,14 +492,17 @@ function testListDirectory() {
     return;
   }
 
-  return loadDirectory('testDir', goog.fs.DirectoryEntry.Behavior.CREATE).
-      then(function() {
-        return loadFile('testFile', goog.fs.DirectoryEntry.Behavior.CREATE);
-      }).
-      then(function() { return loadTestDir(); }).
-      then(function(testDir) { return testDir.listDirectory(); }).
-      then(function(entries) {
-        // Verify the contents of the directory listing.
+  goog.async.Deferred.succeed().
+      // Create the test directory and test entries.
+      awaitDeferred(
+          loadDirectory('testDir', goog.fs.DirectoryEntry.Behavior.CREATE)).
+      awaitDeferred(
+          loadFile('testFile', goog.fs.DirectoryEntry.Behavior.CREATE)).
+      awaitDeferred(loadTestDir()).
+
+      // Verify the contents of the directory listing.
+      addCallback(function(testDir) { return testDir.listDirectory(); }).
+      addCallback(function(entries) {
         assertEquals(2, entries.length);
 
         var dir = goog.array.find(entries, function(entry) {
@@ -457,7 +516,10 @@ function testListDirectory() {
         });
         assertNotNull(file);
         assertTrue(file.isFile());
-      });
+      }).
+      addCallback(continueTesting);
+
+  asyncTestCase.waitForAsync('testListDirectory');
 }
 
 
@@ -483,19 +545,18 @@ function testListBigDirectory() {
 
   var expectedNames = [];
 
-  var def = goog.Promise.resolve();
+  var def = goog.async.Deferred.succeed();
   for (var i = 0; i < count; i++) {
     var name = getFileName(i);
     expectedNames.push(name);
 
-    def.then(function() {
-      return loadFile(name, goog.fs.DirectoryEntry.Behavior.CREATE);
-    });
+    def.awaitDeferred(
+        loadFile(name, goog.fs.DirectoryEntry.Behavior.CREATE));
   }
 
-  return def.then(function() { return loadTestDir(); }).
-      then(function(testDir) { return testDir.listDirectory(); }).
-      then(function(entries) {
+  def.awaitDeferred(loadTestDir()).
+      addCallback(function(testDir) { return testDir.listDirectory(); }).
+      addCallback(function(entries) {
         assertEquals(count, entries.length);
 
         assertSameElements(expectedNames,
@@ -505,7 +566,10 @@ function testListBigDirectory() {
         assertTrue(goog.array.every(entries, function(entry) {
           return entry.isFile();
         }));
-      });
+      }).
+      addCallback(continueTesting);
+
+  asyncTestCase.waitForAsync('testListBigDirectory');
 }
 
 
@@ -688,45 +752,47 @@ function testGetBlobWithPropertiesUsingBlobBuilder() {
 
 
 function loadTestDir() {
-  return deferredFs.then(function(fs) {
+  return deferredFs.branch().addCallback(function(fs) {
     return fs.getRoot().getDirectory(
         TEST_DIR, goog.fs.DirectoryEntry.Behavior.CREATE);
   });
 }
 
 function loadFile(filename, behavior) {
-  return loadTestDir().then(function(dir) {
+  return loadTestDir().addCallback(function(dir) {
     return dir.getFile(filename, behavior);
   });
 }
 
 function loadDirectory(filename, behavior) {
-  return loadTestDir().then(function(dir) {
+  return loadTestDir().addCallback(function(dir) {
     return dir.getDirectory(filename, behavior);
   });
 }
 
 function startWrite(content, file) {
   return file.createWriter().
-      then(goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.INIT)).
-      then(function(writer) {
+      addCallback(
+          goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.INIT)).
+      addCallback(function(writer) {
         writer.write(goog.fs.getBlob(content));
         return writer;
       }).
-      then(goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.WRITING));
+      addCallback(
+          goog.partial(checkReadyState, goog.fs.FileSaver.ReadyState.WRITING));
 }
 
 function waitForEvent(type, target) {
-  var done;
-  var promise = new goog.Promise(function(_done) { done = _done; });
-  goog.events.listenOnce(target, type, done);
-  return promise;
+  var d = new goog.async.Deferred();
+  goog.events.listenOnce(target, type, d.callback, false, d);
+  return d;
 }
 
 function writeToFile(content, file) {
   return startWrite(content, file).
-      then(goog.partial(waitForEvent, goog.fs.FileSaver.EventType.WRITE)).
-      then(function() { return file; });
+      addCallback(
+          goog.partial(waitForEvent, goog.fs.FileSaver.EventType.WRITE)).
+      addCallback(function() { return file; });
 }
 
 function checkFileContent(content, file) {
@@ -734,15 +800,15 @@ function checkFileContent(content, file) {
 }
 
 function checkFileContentWithEncoding(content, encoding, file) {
-  return checkFileContentAs(content, 'Text', encoding, file);
+  checkFileContentAs(content, 'Text', encoding, file);
 }
 
 function checkFileContentAs(content, filetype, encoding, file) {
   return file.file().
-      then(function(blob) {
+      addCallback(function(blob) {
         return goog.fs.FileReader['readAs' + filetype](blob, encoding);
       }).
-      then(goog.partial(checkEquals, content));
+      addCallback(goog.partial(checkEquals, content));
 }
 
 function checkEquals(a, b) {
@@ -759,16 +825,16 @@ function checkEquals(a, b) {
 }
 
 function checkFileRemoved(filename) {
-  return loadFile(filename).then(
-      goog.partial(fail, 'expected file to be removed'),
-      function(err) {
+  return loadFile(filename).
+      addCallback(goog.partial(fail, 'expected file to be removed')).
+      addErrback(function(err) {
         assertEquals(err.code, goog.fs.Error.ErrorCode.NOT_FOUND);
+        return true; // Go back to callback path
       });
 }
 
 function checkReadyState(expectedState, writer) {
   assertEquals(expectedState, writer.getReadyState());
-  return writer;
 }
 
 function splitArgs(fn) {

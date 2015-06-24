@@ -16,7 +16,6 @@
  * @fileoverview Utilties for working with DOM nodes related to rich text
  * editing.  Many of these are not general enough to go into goog.dom.
  *
- * @author nicksantos@google.com (Nick Santos)
  */
 
 goog.provide('goog.editor.node');
@@ -211,7 +210,7 @@ goog.editor.node.getChildHelper_ = function(parent, isReversed) {
   return (!parent || parent.nodeType != goog.dom.NodeType.ELEMENT) ? null :
       /** @type {Node} */ (goog.editor.node.getFirstValue_(goog.iter.filter(
           new goog.dom.iter.ChildIterator(
-              /** @type {!Element} */ (parent), isReversed),
+              /** @type {Element} */ (parent), isReversed),
           goog.editor.node.isImportant)));
 };
 

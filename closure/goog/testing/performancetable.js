@@ -24,7 +24,6 @@
 goog.provide('goog.testing.PerformanceTable');
 
 goog.require('goog.dom');
-goog.require('goog.dom.TagName');
 goog.require('goog.testing.PerformanceTimer');
 
 
@@ -36,35 +35,36 @@ goog.require('goog.testing.PerformanceTimer');
  *     executing functions and profiling them.
  * @param {number=} opt_precision Number of digits of precision to include in
  *     results.  Defaults to 0.
- * @param {number=} opt_numSamples The number of samples to take. Defaults to 5.
  * @constructor
  * @final
  */
-goog.testing.PerformanceTable = function(
-    root, opt_timer, opt_precision, opt_numSamples) {
+goog.testing.PerformanceTable = function(root, opt_timer, opt_precision) {
   /**
    * Where the table should be attached.
-   * @private {Element}
+   * @type {Element}
+   * @private
    */
   this.root_ = root;
 
   /**
    * Number of digits of precision to include in results.
    * Defaults to 0.
-   * @private {number}
+   * @type {number}
+   * @private
    */
   this.precision_ = opt_precision || 0;
 
   var timer = opt_timer;
   if (!timer) {
     timer = new goog.testing.PerformanceTimer();
-    timer.setNumSamples(opt_numSamples || 5);
+    timer.setNumSamples(5);
     timer.setDiscardOutliers(true);
   }
 
   /**
    * A timer for running the tests.
-   * @private {goog.testing.PerformanceTimer}
+   * @type {goog.testing.PerformanceTimer}
+   * @private
    */
   this.timer_ = timer;
 

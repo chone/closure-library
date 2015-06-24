@@ -13,7 +13,6 @@
 // limitations under the License.
 
 goog.provide('goog.testing.benchmark');
-goog.setTestOnly('goog.testing.benchmark');
 
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');

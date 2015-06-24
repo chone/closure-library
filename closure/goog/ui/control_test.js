@@ -704,62 +704,6 @@ function testGetContentForDecoratedControl() {
 
 
 /**
- * Tests {@link goog.ui.Control#setAriaLabel}.
- */
-function testSetAriaLabel_render() {
-  assertNull('Controls must not have any aria label by default',
-      control.getAriaLabel());
-
-  control.setAriaLabel('label');
-  assertEquals('Control must have aria label', 'label', control.getAriaLabel());
-
-  control.render(sandbox);
-
-  var elem = control.getElementStrict();
-  assertEquals(
-      'Element must have control\'s aria label after rendering',
-      'label',
-      goog.a11y.aria.getLabel(elem));
-
-  control.setAriaLabel('new label');
-  assertEquals('Element must have the new aria label',
-      'new label',
-      goog.a11y.aria.getLabel(elem));
-}
-
-
-/**
- * Tests {@link goog.ui.Control#setAriaLabel}.
- */
-function testSetAriaLabel_decorate() {
-  assertNull('Controls must not have any aria label by default',
-      control.getAriaLabel());
-
-  control.setAriaLabel('label');
-  assertEquals('Control must have aria label', 'label', control.getAriaLabel());
-
-  sandbox.innerHTML = '<div id="nodelist" role="button">' +
-      'Hello, <b>world</b>!</div>';
-  control.decorate(goog.dom.getElement('nodelist'));
-
-  var elem = control.getElementStrict();
-  assertEquals(
-      'Element must have control\'s aria label after rendering',
-      'label',
-      goog.a11y.aria.getLabel(elem));
-  assertEquals(
-      'Element must have the correct role',
-      'button',
-      elem.getAttribute('role'));
-
-  control.setAriaLabel('new label');
-  assertEquals('Element must have the new aria label',
-      'new label',
-      goog.a11y.aria.getLabel(elem));
-}
-
-
-/**
  * Tests {@link goog.ui.Control#setContent}.
  */
 function testSetContent() {
@@ -1128,7 +1072,7 @@ function testSetEnabled() {
   assertTrue('Control must be active', control.isActive());
   var elem = control.getElementStrict();
   assertTrue('Control element must not have aria-disabled',
-      goog.string.isEmptyOrWhitespace(aria.getState(elem, State.DISABLED)));
+      goog.string.isEmpty(aria.getState(elem, State.DISABLED)));
   assertEquals('Control element must have a tabIndex of 0', 0,
       goog.string.toNumber(elem.getAttribute('tabIndex') || ''));
 
@@ -1195,7 +1139,7 @@ function testSetStateWithDisabled() {
   assertTrue('Control must be enabled', control.isEnabled());
   assertTrue('Control must be highlighted', control.isHighlighted());
   assertTrue('Control must be active', control.isActive());
-  assertTrue('Control element must not have aria-disabled', goog.string.isEmptyOrWhitespace(
+  assertTrue('Control element must not have aria-disabled', goog.string.isEmpty(
       aria.getState(control.getElementStrict(), State.DISABLED)));
   assertEquals('Control element must have a tabIndex of 0', 0,
       goog.string.toNumber(

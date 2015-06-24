@@ -16,6 +16,7 @@
 /**
  * @fileoverview CanvasGraphics sub class that uses the canvas tag for drawing.
  * @author robbyw@google.com (Robby Walker)
+ * @author wcrosby@google.com (Wayne Crosby)
  */
 
 
@@ -419,6 +420,19 @@ goog.graphics.CanvasGraphics.prototype.drawElement = function(element) {
   this.popElementTransform();
 };
 
+
+/**
+ * Append an element.
+ *
+ * @param {goog.graphics.Element} element The element to draw.
+ * @param {goog.graphics.CanvasGroupElement|undefined} group The group to draw
+ *     it in. If null or undefined, defaults to the root group.
+ * @private
+ * @deprecated Use append instead.
+ */
+goog.graphics.CanvasGraphics.prototype.append_ = function(element, group) {
+  this.append(element, group);
+};
 
 
 /**

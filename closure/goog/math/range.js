@@ -27,7 +27,6 @@ goog.require('goog.asserts');
  * A number range.
  * @param {number} a One end of the range.
  * @param {number} b The other end of the range.
- * @struct
  * @constructor
  */
 goog.math.Range = function(a, b) {
@@ -47,7 +46,7 @@ goog.math.Range = function(a, b) {
 
 /**
  * Creates a goog.math.Range from an array of two numbers.
- * @param {!Array<number>} pair
+ * @param {!Array.<number>} pair
  * @return {!goog.math.Range}
  */
 goog.math.Range.fromPair = function(pair) {

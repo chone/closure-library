@@ -23,10 +23,8 @@ goog.provide('goog.debug.Formatter');
 goog.provide('goog.debug.HtmlFormatter');
 goog.provide('goog.debug.TextFormatter');
 
-goog.require('goog.debug');
-goog.require('goog.debug.Logger');
 goog.require('goog.debug.RelativeTimeProvider');
-goog.require('goog.html.SafeHtml');
+goog.require('goog.string');
 
 
 
@@ -98,14 +96,6 @@ goog.debug.Formatter.prototype.showSeverityLevel = false;
  * @return {string} The formatted string.
  */
 goog.debug.Formatter.prototype.formatRecord = goog.abstractMethod;
-
-
-/**
- * Formats a record as SafeHtml.
- * @param {goog.debug.LogRecord} logRecord the logRecord to format.
- * @return {!goog.html.SafeHtml} The formatted string as SafeHtml.
- */
-goog.debug.Formatter.prototype.formatRecordAsHtml = goog.abstractMethod;
 
 
 /**
@@ -232,25 +222,6 @@ goog.debug.HtmlFormatter.prototype.showExceptionText = true;
  * @override
  */
 goog.debug.HtmlFormatter.prototype.formatRecord = function(logRecord) {
-  if (!logRecord) {
-    return '';
-  }
-  // OK not to use goog.html.SafeHtml.unwrap() here.
-  return this.formatRecordAsHtml(logRecord).getTypedStringValue();
-};
-
-
-/**
- * Formats a record.
- * @param {goog.debug.LogRecord} logRecord the logRecord to format.
- * @return {!goog.html.SafeHtml} The formatted string as SafeHtml.
- * @override
- */
-goog.debug.HtmlFormatter.prototype.formatRecordAsHtml = function(logRecord) {
-  if (!logRecord) {
-    return goog.html.SafeHtml.EMPTY;
-  }
-
   var className;
   switch (logRecord.getLevel().value) {
     case goog.debug.Logger.Level.SHOUT.value:
@@ -271,7 +242,7 @@ goog.debug.HtmlFormatter.prototype.formatRecordAsHtml = function(logRecord) {
       break;
   }
 
-  // HTML for user defined prefix, time, logger name, and severity.
+  // Build message html
   var sb = [];
   sb.push(this.prefix_, ' ');
   if (this.showAbsoluteTime) {
@@ -279,43 +250,33 @@ goog.debug.HtmlFormatter.prototype.formatRecordAsHtml = function(logRecord) {
   }
   if (this.showRelativeTime) {
     sb.push('[',
-        goog.debug.Formatter.getRelativeTime_(
-            logRecord, this.startTimeProvider_.get()),
+        goog.string.whitespaceEscape(
+            goog.debug.Formatter.getRelativeTime_(logRecord,
+                this.startTimeProvider_.get())),
         's] ');
   }
+
   if (this.showLoggerName) {
-    sb.push('[', logRecord.getLoggerName(), '] ');
+    sb.push('[', goog.string.htmlEscape(logRecord.getLoggerName()), '] ');
   }
   if (this.showSeverityLevel) {
-    sb.push('[', logRecord.getLevel().name, '] ');
+    sb.push('[', goog.string.htmlEscape(logRecord.getLevel().name), '] ');
   }
-  var fullPrefixHtml =
-      goog.html.SafeHtml.htmlEscapePreservingNewlinesAndSpaces(sb.join(''));
+  sb.push('<span class="', className, '">',
+      goog.string.newLineToBr(goog.string.whitespaceEscape(
+          goog.string.htmlEscape(logRecord.getMessage()))));
 
-  // HTML for exception text and log record.
-  var exceptionHtml = goog.html.SafeHtml.EMPTY;
   if (this.showExceptionText && logRecord.getException()) {
-    exceptionHtml = goog.html.SafeHtml.concat(
-        goog.html.SafeHtml.create('br'),
-        goog.debug.exposeExceptionAsHtml(logRecord.getException()));
+    sb.push('<br>',
+        goog.string.newLineToBr(goog.string.whitespaceEscape(
+            logRecord.getExceptionText() || '')));
   }
-  var logRecordHtml = goog.html.SafeHtml.htmlEscapePreservingNewlinesAndSpaces(
-      logRecord.getMessage());
-  var recordAndExceptionHtml = goog.html.SafeHtml.create(
-      'span',
-      {'class': className},
-      goog.html.SafeHtml.concat(logRecordHtml, exceptionHtml));
-
-
-  // Combine both pieces of HTML and, if needed, append a final newline.
-  var html;
+  sb.push('</span>');
   if (this.appendNewline) {
-    html = goog.html.SafeHtml.concat(fullPrefixHtml, recordAndExceptionHtml,
-        goog.html.SafeHtml.create('br'));
-  } else {
-    html = goog.html.SafeHtml.concat(fullPrefixHtml, recordAndExceptionHtml);
+    sb.push('<br>');
   }
-  return html;
+
+  return sb.join('');
 };
 
 
@@ -341,6 +302,7 @@ goog.inherits(goog.debug.TextFormatter, goog.debug.Formatter);
  * @override
  */
 goog.debug.TextFormatter.prototype.formatRecord = function(logRecord) {
+  // Build message html
   var sb = [];
   sb.push(this.prefix_, ' ');
   if (this.showAbsoluteTime) {
@@ -358,30 +320,11 @@ goog.debug.TextFormatter.prototype.formatRecord = function(logRecord) {
     sb.push('[', logRecord.getLevel().name, '] ');
   }
   sb.push(logRecord.getMessage());
-  if (this.showExceptionText) {
-    var exception = logRecord.getException();
-    if (exception) {
-      var exceptionText = exception instanceof Error ?
-          exception.message :
-          exception.toString();
-      sb.push('\n', exceptionText);
-    }
+  if (this.showExceptionText && logRecord.getException()) {
+    sb.push('\n', logRecord.getExceptionText());
   }
   if (this.appendNewline) {
     sb.push('\n');
   }
   return sb.join('');
-};
-
-
-/**
- * Formats a record as text
- * @param {goog.debug.LogRecord} logRecord the logRecord to format.
- * @return {!goog.html.SafeHtml} The formatted string as SafeHtml. This is
- *     just an HTML-escaped version of the text obtained from formatRecord().
- * @override
- */
-goog.debug.TextFormatter.prototype.formatRecordAsHtml = function(logRecord) {
-  return goog.html.SafeHtml.htmlEscapePreservingNewlinesAndSpaces(
-      goog.debug.TextFormatter.prototype.formatRecord(logRecord));
 };

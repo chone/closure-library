@@ -19,7 +19,6 @@
  * sub-namespaces in goog.labs.userAgent, goog.labs.userAgent.platform,
  * goog.labs.userAgent.device respectively.)
  *
- * @author martone@google.com (Andy Martone)
  */
 
 goog.provide('goog.labs.userAgent.browser');
@@ -28,10 +27,6 @@ goog.require('goog.array');
 goog.require('goog.labs.userAgent.util');
 goog.require('goog.object');
 goog.require('goog.string');
-
-
-// TODO(nnaze): Refactor to remove excessive exclusion logic in matching
-// functions.
 
 
 /**
@@ -69,37 +64,9 @@ goog.labs.userAgent.browser.matchFirefox_ = function() {
  */
 goog.labs.userAgent.browser.matchSafari_ = function() {
   return goog.labs.userAgent.util.matchUserAgent('Safari') &&
-      !(goog.labs.userAgent.browser.matchChrome_() ||
-        goog.labs.userAgent.browser.matchCoast_() ||
-        goog.labs.userAgent.browser.matchOpera_() ||
-        goog.labs.userAgent.browser.isSilk() ||
-        goog.labs.userAgent.util.matchUserAgent('Android'));
-};
-
-
-/**
- * @return {boolean} Whether the user's browser is Coast (Opera's Webkit-based
- *     iOS browser).
- * @private
- */
-goog.labs.userAgent.browser.matchCoast_ = function() {
-  return goog.labs.userAgent.util.matchUserAgent('Coast');
-};
-
-
-/**
- * @return {boolean} Whether the user's browser is iOS Webview.
- * @private
- */
-goog.labs.userAgent.browser.matchIosWebview_ = function() {
-  // iOS Webview does not show up as Chrome or Safari. Also check for Opera's
-  // WebKit-based iOS browser, Coast.
-  return (goog.labs.userAgent.util.matchUserAgent('iPad') ||
-          goog.labs.userAgent.util.matchUserAgent('iPhone')) &&
-      !goog.labs.userAgent.browser.matchSafari_() &&
-      !goog.labs.userAgent.browser.matchChrome_() &&
-      !goog.labs.userAgent.browser.matchCoast_() &&
-      goog.labs.userAgent.util.matchUserAgent('AppleWebKit');
+      !goog.labs.userAgent.util.matchUserAgent('Chrome') &&
+      !goog.labs.userAgent.util.matchUserAgent('CriOS') &&
+      !goog.labs.userAgent.util.matchUserAgent('Android');
 };
 
 
@@ -108,9 +75,8 @@ goog.labs.userAgent.browser.matchIosWebview_ = function() {
  * @private
  */
 goog.labs.userAgent.browser.matchChrome_ = function() {
-  return (goog.labs.userAgent.util.matchUserAgent('Chrome') ||
-      goog.labs.userAgent.util.matchUserAgent('CriOS')) &&
-      !goog.labs.userAgent.browser.matchOpera_();
+  return goog.labs.userAgent.util.matchUserAgent('Chrome') ||
+      goog.labs.userAgent.util.matchUserAgent('CriOS');
 };
 
 
@@ -121,11 +87,9 @@ goog.labs.userAgent.browser.matchChrome_ = function() {
 goog.labs.userAgent.browser.matchAndroidBrowser_ = function() {
   // Android can appear in the user agent string for Chrome on Android.
   // This is not the Android standalone browser if it does.
-  return goog.labs.userAgent.util.matchUserAgent('Android') &&
-      !(goog.labs.userAgent.browser.isChrome() ||
-        goog.labs.userAgent.browser.isFirefox() ||
-        goog.labs.userAgent.browser.isOpera() ||
-        goog.labs.userAgent.browser.isSilk());
+  return !goog.labs.userAgent.browser.isChrome() &&
+      goog.labs.userAgent.util.matchUserAgent('Android');
+
 };
 
 
@@ -153,21 +117,6 @@ goog.labs.userAgent.browser.isFirefox =
  */
 goog.labs.userAgent.browser.isSafari =
     goog.labs.userAgent.browser.matchSafari_;
-
-
-/**
- * @return {boolean} Whether the user's browser is Coast (Opera's Webkit-based
- *     iOS browser).
- */
-goog.labs.userAgent.browser.isCoast =
-    goog.labs.userAgent.browser.matchCoast_;
-
-
-/**
- * @return {boolean} Whether the user's browser is iOS Webview.
- */
-goog.labs.userAgent.browser.isIosWebview =
-    goog.labs.userAgent.browser.matchIosWebview_;
 
 
 /**

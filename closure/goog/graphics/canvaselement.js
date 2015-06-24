@@ -16,6 +16,7 @@
 /**
  * @fileoverview Objects representing shapes drawn on a canvas.
  * @author robbyw@google.com (Robby Walker)
+ * @author wcrosby@google.com (Wayne Crosby)
  */
 
 goog.provide('goog.graphics.CanvasEllipseElement');
@@ -29,7 +30,6 @@ goog.provide('goog.graphics.CanvasTextElement');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
-goog.require('goog.dom.safe');
 goog.require('goog.graphics.EllipseElement');
 goog.require('goog.graphics.GroupElement');
 goog.require('goog.graphics.ImageElement');
@@ -37,11 +37,8 @@ goog.require('goog.graphics.Path');
 goog.require('goog.graphics.PathElement');
 goog.require('goog.graphics.RectElement');
 goog.require('goog.graphics.TextElement');
-goog.require('goog.html.SafeHtml');
-goog.require('goog.html.uncheckedconversions');
 goog.require('goog.math');
 goog.require('goog.string');
-goog.require('goog.string.Const');
 
 
 
@@ -65,7 +62,7 @@ goog.graphics.CanvasGroupElement = function(graphics) {
 
   /**
    * Children contained by this group.
-   * @type {Array<goog.graphics.Element>}
+   * @type {Array.<goog.graphics.Element>}
    * @private
    */
   this.children_ = [];
@@ -640,23 +637,12 @@ goog.graphics.CanvasTextElement.prototype.updateStyle_ = function() {
 goog.graphics.CanvasTextElement.prototype.updateText_ = function() {
   if (this.x1_ == this.x2_) {
     // Special case vertical text
-    var html =
-        goog.array.map(
-            this.text_.split(''),
-            function(entry) { return goog.string.htmlEscape(entry); })
-        .join('<br>');
-    // Creating a SafeHtml for each character would be quite expensive, and it's
-    // obvious that this is safe, so an unchecked conversion is appropriate.
-    var safeHtml = goog.html.uncheckedconversions
-        .safeHtmlFromStringKnownToSatisfyTypeContract(
-            goog.string.Const.from('Concatenate escaped chars and <br>'),
-            html);
-    goog.dom.safe.setInnerHtml(
-        /** @type {!Element} */ (this.innerElement_), safeHtml);
+    this.innerElement_.innerHTML =
+        goog.array.map(this.text_.split(''),
+            function(entry) { return goog.string.htmlEscape(entry); }).
+            join('<br>');
   } else {
-    goog.dom.safe.setInnerHtml(
-        /** @type {!Element} */ (this.innerElement_),
-        goog.html.SafeHtml.htmlEscape(this.text_));
+    this.innerElement_.innerHTML = goog.string.htmlEscape(this.text_);
   }
 };
 

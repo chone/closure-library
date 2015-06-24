@@ -60,6 +60,7 @@
 
 goog.provide('goog.testing.DeferredTestCase');
 
+goog.require('goog.async.Deferred');
 goog.require('goog.testing.AsyncTestCase');
 goog.require('goog.testing.TestCase');
 

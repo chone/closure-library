@@ -23,13 +23,10 @@ __author__ = 'nnaze@google.com'
 
 import re
 
-_BASE_REGEX_STRING = r'^\s*goog\.%s\(\s*[\'"](.+)[\'"]\s*\)'
+_BASE_REGEX_STRING = '^\s*goog\.%s\(\s*[\'"](.+)[\'"]\s*\)'
 _MODULE_REGEX = re.compile(_BASE_REGEX_STRING % 'module')
 _PROVIDE_REGEX = re.compile(_BASE_REGEX_STRING % 'provide')
-
-_REQUIRE_REGEX_STRING = (r'^\s*(?:(?:var|let|const)\s+[a-zA-Z_$][a-zA-Z0-9$_]*'
-                         r'\s*=\s*)?goog\.require\(\s*[\'"](.+)[\'"]\s*\)')
-_REQUIRES_REGEX = re.compile(_REQUIRE_REGEX_STRING)
+_REQUIRES_REGEX = re.compile(_BASE_REGEX_STRING % 'require')
 
 
 class Source(object):
@@ -55,7 +52,7 @@ class Source(object):
     """
 
     self.provides = set()
-    self.requires = set()
+    self.requires = list()
     self.is_goog_module = False
 
     self._source = source
@@ -94,16 +91,16 @@ class Source(object):
         self.is_goog_module = True
       match = _REQUIRES_REGEX.match(line)
       if match:
-        self.requires.add(match.group(1))
+	require = match.group(1);
+	if require not in self.requires:
+	  self.requires.append(require)
 
     # Closure's base file implicitly provides 'goog'.
     # This is indicated with the @provideGoog flag.
     if self._HasProvideGoogFlag(self.GetSource()):
-
       if len(self.provides) or len(self.requires):
         raise Exception(
             'Base file should not provide or require namespaces.')
-
       self.provides.add('goog')
 
 

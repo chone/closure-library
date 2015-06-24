@@ -42,7 +42,7 @@ goog.require('goog.events');
  * @param {!IDBObjectStore} store The backing IndexedDb object.
  * @constructor
  *
- * TODO(arthurhsu): revisit msg in exception and errors in this class. In newer
+ * TODO(user): revisit msg in exception and errors in this class. In newer
  *     Chrome (v22+) the error/request come with a DOM error string that is
  *     already very descriptive.
  * @final
@@ -101,6 +101,7 @@ goog.db.ObjectStore.prototype.insert_ = function(fn, msg, value, opt_key) {
   request.onsuccess = function(ev) {
     d.callback();
   };
+  var self = this;
   request.onerror = function(ev) {
     msg += goog.debug.deepExpose(value);
     if (opt_key) {
@@ -379,22 +380,21 @@ goog.db.ObjectStore.prototype.deleteIndex = function(name) {
  * @return {!goog.async.Deferred} The deferred number of records.
  */
 goog.db.ObjectStore.prototype.count = function(opt_range) {
+  var request;
   var d = new goog.async.Deferred();
 
   try {
     var range = opt_range ? opt_range.range() : null;
-    var request = this.store_.count(range);
-    request.onsuccess = function(ev) {
-      d.callback(ev.target.result);
-    };
-    var self = this;
-    request.onerror = function(ev) {
-      d.errback(goog.db.Error.fromRequest(ev.target, self.getName()));
-    };
+    request = this.store_.count(range);
   } catch (ex) {
     d.errback(goog.db.Error.fromException(ex, this.getName()));
   }
-
+  request.onsuccess = function(ev) {
+    d.callback(ev.target.result);
+  };
+  request.onerror = function(ev) {
+    d.errback(goog.db.Error.fromRequest(ev.target, this.getName()));
+  };
   return d;
 };
 
